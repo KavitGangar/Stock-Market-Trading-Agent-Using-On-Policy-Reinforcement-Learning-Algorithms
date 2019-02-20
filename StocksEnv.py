@@ -108,7 +108,7 @@ class StocksEnv(gym.Env):
                 apl_shares = self.state[0] + action[1]
                 cash_spent = action[1] * apl_open[cur_timestep] * 1.1
                 new_state = [apl_shares, self.state[1], self.state[2] - cash_spent, *self.next_opening_price(), \
-                       self.next_open_price(apl_shares,self.state[1]), *self.five_day_window()]
+                       self.next_open_price(apl_shares,self.state[1]) + self.state[2] - cash_spent, *self.five_day_window()]
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
@@ -125,7 +125,7 @@ class StocksEnv(gym.Env):
                 msf_shares = self.state[1] + action[1]
                 cash_spent = action[1] * msf_open[cur_timestep] * 1.1
                 new_state = [self.state[0], msf_shares, self.state[2] - cash_spent, *self.next_opening_price(), \
-                       self.next_open_price(self.state[0],msf_shares), *self.five_day_window()]
+                       self.next_open_price(self.state[0],msf_shares)  + self.state[2] - cash_spent , *self.five_day_window()]
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
@@ -143,7 +143,7 @@ class StocksEnv(gym.Env):
                 apl_shares = self.state[0] - action[1]
                 cash_gained = action[1] * apl_open[cur_timestep] * 0.9
                 new_state = [apl_shares, self.state[1], self.state[2] + cash_gained, *self.next_opening_price(), \
-                       self.next_open_price(apl_shares,self.state[1]), *self.five_day_window()]
+                       self.next_open_price(apl_shares,self.state[1]) + self.state[2] + cash_gained, *self.five_day_window()]
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
@@ -160,7 +160,7 @@ class StocksEnv(gym.Env):
                 msf_shares = self.state[1] - action[1]
                 cash_gained = action[1] * msf_open[cur_timestep] * 0.9
                 new_state = [self.state[0], msf_shares, self.state[2] + cash_gained, *self.next_opening_price(), \
-                       self.next_open_price(self.state[0],msf_shares), *self.five_day_window()]
+                       self.next_open_price(self.state[0],msf_shares) + self.state[2] + cash_gained , *self.five_day_window()]
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
