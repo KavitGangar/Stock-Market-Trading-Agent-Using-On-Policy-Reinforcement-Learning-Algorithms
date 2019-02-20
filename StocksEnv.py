@@ -43,14 +43,14 @@ class StocksEnv(gym.Env):
         
         self.state = np.zeros(8)
         
-        self.starting_cash = 200
+        self.starting_cash = 2000
 
         self.series_length = 208
         self.starting_point = 1
         self.cur_timestep = self.starting_point
         
-        self.state[0] = 2
-        self.state[1] = 2
+        self.state[0] = 70
+        self.state[1] = 70
         self.starting_portfolio_value = self.portfolio_value_open()
         self.state[2] = self.starting_cash
         self.state[3] = apl_open[self.cur_timestep]
@@ -175,9 +175,9 @@ class StocksEnv(gym.Env):
         self.state = np.zeros(8)
         self.starting_cash = 200
         self.cur_timestep = 1
-        self.state[0] = 2
-        self.state[1] = 2
-        self.state[2] = 200
+        self.state[0] = 70
+        self.state[1] = 70
+        self.state[2] = 2000
         self.state[3] = apl_open[self.cur_timestep]
         self.state[4] = msf_open[self.cur_timestep]
         self.starting_portfolio_value = self.portfolio_value()
