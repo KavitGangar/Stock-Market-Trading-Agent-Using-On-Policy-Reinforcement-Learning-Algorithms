@@ -93,9 +93,9 @@ class StocksEnv(gym.Env):
         
         if action[0] == 2:
             new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                    cur_value, *self.five_day_window()]
+                    self.next_open_price(self.state[0],self.state[1]), *self.five_day_window()]
             self.state = new_state
-            retval = np.array(new_state), gain*20, False, { "msg": "nothing" }
+            retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "nothing" }
             
         if action[0] == 0:
             if action[1] * apl_open[cur_timestep] > self.state[2]:
@@ -103,7 +103,7 @@ class StocksEnv(gym.Env):
                         cur_value, *self.five_day_window()]
                 self.state = new_state
                 print("\nEpisode Terminating Bankrupt")
-                retval = np.array(new_state), -1000, True, { "msg": "bankrupted self"}
+                retval = np.array(new_state), -10000, True, { "msg": "bankrupted self"}
             else:
                 apl_shares = self.state[0] + action[1]
                 cash_spent = action[1] * apl_open[cur_timestep] * 1.1
@@ -112,7 +112,7 @@ class StocksEnv(gym.Env):
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), gain*20, False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "bought AAPL"}
                 
         if action[0] == 3:
             if action[1] * msf_open[cur_timestep] > self.state[2]:
@@ -120,7 +120,7 @@ class StocksEnv(gym.Env):
                         cur_value, *self.five_day_window()]
                 self.state = new_state
                 print("\nEpisode Terminating Bankrupt__")
-                retval =  np.array(new_state), -100, True, { "msg": "bankrupted self"}
+                retval =  np.array(new_state), -10000, True, { "msg": "bankrupted self"}
             else:
                 msf_shares = self.state[1] + action[1]
                 cash_spent = action[1] * msf_open[cur_timestep] * 1.1
@@ -129,7 +129,7 @@ class StocksEnv(gym.Env):
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), gain*20, False, { "msg": "bought MSFT"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "bought MSFT"}
         
 
         if action[0] == 1:
@@ -147,7 +147,7 @@ class StocksEnv(gym.Env):
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), gain*20, False, { "msg": "sold AAPL"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold AAPL"}
                 
         if action[0] == 4:
             if action[1] > self.state[1]:
@@ -164,7 +164,7 @@ class StocksEnv(gym.Env):
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), gain*20, False, { "msg": "sold MSFT"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold MSFT"}
                 
         print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
         self.cur_timestep += self.stride
