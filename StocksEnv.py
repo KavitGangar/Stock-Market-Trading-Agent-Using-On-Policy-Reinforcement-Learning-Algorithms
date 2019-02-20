@@ -201,7 +201,7 @@ class StocksEnv(gym.Env):
     
     def next_open_price(self,apl_,msf_):
         step = self.cur_timestep + self.stride
-        return (apl_ * aplopen[step]) + (msf_ * msfopen[step]) 
+        return (apl_ * apl_open[step]) + (msf_ * msf_open[step]) 
            
     
     
