@@ -110,6 +110,8 @@ class StocksEnv(gym.Env):
                 new_state = [apl_shares, self.state[1], self.state[2] - cash_spent, *self.next_opening_price(), \
                        self.next_open_price(apl_shares,self.state[1]), *self.five_day_window()]
                 self.state = new_state
+                cur_value = self.portfolio_value()
+                gain = cur_value - self.starting_portfolio_value
                 retval = np.array(new_state), gain*20, False, { "msg": "bought AAPL"}
                 
         if action[0] == 3:
@@ -125,6 +127,8 @@ class StocksEnv(gym.Env):
                 new_state = [self.state[0], msf_shares, self.state[2] - cash_spent, *self.next_opening_price(), \
                        self.next_open_price(self.state[0],msf_shares), *self.five_day_window()]
                 self.state = new_state
+                cur_value = self.portfolio_value()
+                gain = cur_value - self.starting_portfolio_value
                 retval = np.array(new_state), gain*20, False, { "msg": "bought MSFT"}
         
 
@@ -141,6 +145,8 @@ class StocksEnv(gym.Env):
                 new_state = [apl_shares, self.state[1], self.state[2] + cash_gained, *self.next_opening_price(), \
                        self.next_open_price(apl_shares,self.state[1]), *self.five_day_window()]
                 self.state = new_state
+                cur_value = self.portfolio_value()
+                gain = cur_value - self.starting_portfolio_value
                 retval = np.array(new_state), gain*20, False, { "msg": "sold AAPL"}
                 
         if action[0] == 4:
@@ -156,6 +162,8 @@ class StocksEnv(gym.Env):
                 new_state = [self.state[0], msf_shares, self.state[2] + cash_gained, *self.next_opening_price(), \
                        self.next_open_price(self.state[0],msf_shares), *self.five_day_window()]
                 self.state = new_state
+                cur_value = self.portfolio_value()
+                gain = cur_value - self.starting_portfolio_value
                 retval = np.array(new_state), gain*20, False, { "msg": "sold MSFT"}
                 
         print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
@@ -191,11 +199,11 @@ class StocksEnv(gym.Env):
         step = self.cur_timestep + self.stride
         return [apl_open[step], msf_open[step]]
     
-    def next_portfolio_value(self,apl_,msf_){
+    def next_portfolio_value(self,apl_,msf_):
         step = self.cur_timestep + self.stride
         return (apl_ * aplopen[step]) + (msf_ * msfopen[step]) 
            
-    }
+    
     
     def five_day_window(self):
         step = self.cur_timestep
