@@ -199,7 +199,7 @@ class StocksEnv(gym.Env):
         step = self.cur_timestep + self.stride
         return [apl_open[step], msf_open[step]]
     
-    def next_portfolio_value(self,apl_,msf_):
+    def next_open_price(self,apl_,msf_):
         step = self.cur_timestep + self.stride
         return (apl_ * aplopen[step]) + (msf_ * msfopen[step]) 
            
