@@ -46,7 +46,7 @@ class StocksEnv(gym.Env):
         self.starting_cash = 2000
 
         self.series_length = 100
-        self.starting_point = 1
+        self.starting_point = 40
         self.cur_timestep = self.starting_point
         
         self.state[0] = 10
@@ -174,7 +174,7 @@ class StocksEnv(gym.Env):
     def reset(self):
         self.state = np.zeros(8)
         self.starting_cash = 200
-        self.cur_timestep = 1
+        self.cur_timestep = 40
         self.state[0] = 10
         self.state[1] = 10
         self.state[2] = 2000
