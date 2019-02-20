@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import pickle
-with open("./aplmsfopenclose.pkl", "rb") as f:
+with open("./aplmsfopencloseOG.pkl", "rb") as f:
     d = pickle.load(f)
 
 
@@ -93,7 +93,7 @@ class StocksEnv(gym.Env):
         
         if action[0] == 2:
             new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                    self.next_open_price(self.state[0],self.state[1]), *self.five_day_window()]
+                    self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
             self.state = new_state
             retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "nothing" }
             
