@@ -46,7 +46,7 @@ class StocksEnv(gym.Env):
         self.starting_cash = 2000
 
         self.series_length = 100
-        self.starting_point = 40
+        self.starting_point = 1
         self.cur_timestep = self.starting_point
         
         self.state[0] = random.randint(40,80)
@@ -156,7 +156,7 @@ class StocksEnv(gym.Env):
                 self.state = np.array(new_state)
                 print("\nEpisode Terminating soldmore4")
                 retval = np.array(new_state), -1000000, True, { "msg": "sold more than have"}
-            else:
+            else: 
                 msf_shares = self.state[1] - action[1]
                 cash_gained = action[1] * msf_open[cur_timestep] * 0.9
                 new_state = [self.state[0], msf_shares, self.state[2] + cash_gained, *self.next_opening_price(), \
@@ -164,9 +164,9 @@ class StocksEnv(gym.Env):
                 self.state = np.array(new_state)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold MSFT"}
+                retval = np.array(new_ state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold MSFT"}
                 
-        print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2]," g ",gain)
+        #print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2]," g ",gain)
         self.cur_timestep += self.stride
 
         return retval
@@ -174,7 +174,7 @@ class StocksEnv(gym.Env):
     def reset(self):
         self.state = np.zeros(8)
         self.starting_cash = 200
-        self.cur_timestep = 40
+        self.cur_timestep = 1
         self.state[0] = random.randint(40,80)
         self.state[1] = random.randint(40,80)
         self.state[2] = 2000
