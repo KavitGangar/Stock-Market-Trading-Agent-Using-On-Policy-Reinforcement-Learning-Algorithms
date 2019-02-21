@@ -8,7 +8,7 @@ import random
 import matplotlib.pyplot as plt
 
 import pickle
-with open("./aplmsfopenclose.pkl", "rb") as f:
+with open("./aplmsfopencloseOG.pkl", "rb") as f:
     d = pickle.load(f)
 
 
@@ -89,7 +89,7 @@ class StocksEnv(gym.Env):
             bonus = 0.
             if self.state[0] > 0 and self.state[1] > 0:
                 bonus = self.diversification_bonus
-            print("\nEpisode Terminating done  -- portfoliovalue is " , cur_value )
+            #print("\nEpisode Terminating done  -- portfoliovalue is " , cur_value )
             #print("\nendstate",self.state)
             return np.array(new_state), bonus+gain, True, { "msg": "done"}
         
@@ -104,7 +104,7 @@ class StocksEnv(gym.Env):
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                         cur_value, *self.five_day_window()]
                 self.state = np.array(new_state)
-                print("\nEpisode Terminating Bankrupt")
+                #print("\nEpisode Terminating Bankrupt")
                 retval = np.array(new_state), -100000, True, { "msg": "bankrupted self"}
             else:
                 apl_shares = self.state[0] + action[1]
@@ -121,7 +121,7 @@ class StocksEnv(gym.Env):
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                         cur_value, *self.five_day_window()]
                 self.state = np.array(new_state)
-                print("\nEpisode Terminating Bankrupt__")
+                #print("\nEpisode Terminating Bankrupt__")
                 retval =  np.array(new_state), -100000, True, { "msg": "bankrupted self"}
             else:
                 msf_shares = self.state[1] + action[1]
@@ -139,7 +139,7 @@ class StocksEnv(gym.Env):
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                         cur_value, *self.five_day_window()]
                 self.state = np.array(new_state)
-                print("\nEpisode Terminating soldmore")
+                #print("\nEpisode Terminating soldmore")
                 retval = np.array(new_state), -100000, True, { "msg": "sold more than have"}
             else:
                 apl_shares = self.state[0] - action[1]
@@ -156,7 +156,7 @@ class StocksEnv(gym.Env):
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                         cur_value, *self.five_day_window()]
                 self.state = np.array(new_state)
-                print("\nEpisode Terminating soldmore4")
+                #print("\nEpisode Terminating soldmore4")
                 retval = np.array(new_state), -100000, True, { "msg": "sold more than have"}
             else: 
                 msf_shares = self.state[1] - action[1]
@@ -188,7 +188,7 @@ class StocksEnv(gym.Env):
         self.state[6] = self.five_day_window()[0]
         self.state[7] = self.five_day_window()[1]       
         self.done = False
-        print("\nState:",self.state)
+        #print("\nState:",self.state)
         return self.state
         
 
