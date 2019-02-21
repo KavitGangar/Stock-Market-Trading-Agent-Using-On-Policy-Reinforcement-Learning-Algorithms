@@ -8,7 +8,7 @@ import random
 import matplotlib.pyplot as plt
 
 import pickle
-with open("./aplmsfopencloseOG.pkl", "rb") as f:
+with open("./aplmsfopenclose.pkl", "rb") as f:
     d = pickle.load(f)
 
 
@@ -48,7 +48,7 @@ class StocksEnv(gym.Env):
         
         self.starting_cash = 2000
 
-        self.series_length = 200
+        self.series_length = 200pkl
         self.starting_point = 1
         self.cur_timestep = self.starting_point
         
@@ -101,7 +101,7 @@ class StocksEnv(gym.Env):
             new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                     self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
             self.state = np.array(new_state)
-            retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "nothing" }
+            retval = np.array(new_state), 0, False, { "msg": "nothing" }
             
         if action[0] == 0:
             self.buycount = self.buycount + 1
