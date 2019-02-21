@@ -17,7 +17,7 @@ apl_close = d["ac"]
 msf_open = d["mo"]
 msf_close = d["mc"]
 
-
+ gain
 class StocksEnv(gym.Env):
     
 
@@ -76,7 +76,8 @@ class StocksEnv(gym.Env):
         action = [action,1.]
         #print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
         cur_timestep = self.cur_timestep
-        ts_left = self.series_length*self.stride - (cur_timestep - self.starting_point)
+        #ts_left = self.series_length*self.stride - (cur_timestep - self.starting_point)
+        ts_left = 0
         retval = None
         cur_value = self.portfolio_value()
         gain = cur_value - self.starting_portfolio_value
@@ -179,7 +180,7 @@ class StocksEnv(gym.Env):
         self.cur_timestep = 1
         self.state[0] = random.randint(20,100)
         self.state[1] = random.randint(20,100)
-        self.state[2] = random.randint(100,200)
+        self.state[2] = random.randint(100,2000)
         self.state[3] = apl_open[self.cur_timestep]
         self.state[4] = msf_open[self.cur_timestep]
         self.starting_portfolio_value = self.portfolio_value()
