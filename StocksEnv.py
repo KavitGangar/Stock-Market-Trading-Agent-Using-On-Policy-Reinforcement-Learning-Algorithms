@@ -164,7 +164,7 @@ class StocksEnv(gym.Env):
                 self.state = np.array(new_state)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_ state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold MSFT"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold MSFT"}
                 
         #print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2]," g ",gain)
         self.cur_timestep += self.stride
