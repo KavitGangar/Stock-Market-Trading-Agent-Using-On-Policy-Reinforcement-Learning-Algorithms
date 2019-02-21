@@ -45,7 +45,7 @@ class StocksEnv(gym.Env):
         
         self.starting_cash = 2000
 
-        self.series_length = 100
+        self.series_length = 200
         self.starting_point = 1
         self.cur_timestep = self.starting_point
         
@@ -185,7 +185,9 @@ class StocksEnv(gym.Env):
         self.state[6] = self.five_day_window()[0]
         self.state[7] = self.five_day_window()[1]       
         self.done = False
+        print("\nState:",self.state)
         return self.state
+        
 
     
     def portfolio_value(self):
