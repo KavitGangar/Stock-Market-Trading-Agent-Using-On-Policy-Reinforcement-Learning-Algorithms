@@ -49,8 +49,8 @@ class StocksEnv(gym.Env):
         self.starting_point = 1
         self.cur_timestep = self.starting_point
         
-        self.state[0] = random.randint(40,80)
-        self.state[1] = random.randint(40,80)
+        self.state[0] = 10 #random.randint(40,80)
+        self.state[1] = 10 #random.randint(40,80)
         self.starting_portfolio_value = self.portfolio_value_open()
         self.state[2] = self.starting_cash
         self.state[3] = apl_open[self.cur_timestep]
@@ -168,15 +168,16 @@ class StocksEnv(gym.Env):
                 
         #print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2]," g ",gain)
         self.cur_timestep += self.stride
-
+        if retval[2] == true:
+            print("\nendstate",state)
         return retval
 
     def reset(self):
         self.state = np.zeros(8)
         self.starting_cash = 200
         self.cur_timestep = 1
-        self.state[0] = random.randint(40,80)
-        self.state[1] = random.randint(40,80)
+        self.state[0] = 10 #random.randint(40,80)
+        self.state[1] = 10 #random.randint(40,80)
         self.state[2] = 2000
         self.state[3] = apl_open[self.cur_timestep]
         self.state[4] = msf_open[self.cur_timestep]
