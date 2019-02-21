@@ -31,8 +31,8 @@ class StocksEnv(gym.Env):
         self.sellcount = 0
         self.sitcount = 0
         #-----
-        self.low_state = np.zeros((8,))
-        self.high_state = np.zeros((8,))+100000000
+        self.low_state = np.zeros((14,))
+        self.high_state = np.zeros((14,))+100000000
 
         self.viewer = None
 
@@ -49,7 +49,7 @@ class StocksEnv(gym.Env):
         self.starting_cash = 2000
 
         self.series_length = 200
-        self.starting_point = 1
+        self.starting_point = 41
         self.cur_timestep = self.starting_point
         
         self.state[0] = random.randint(0,10)
@@ -61,6 +61,12 @@ class StocksEnv(gym.Env):
         self.state[5] = self.starting_portfolio_value
         self.state[6] = self.five_day_window()[0]
         self.state[7] = self.five_day_window()[1]
+        self.state[8] = self.five_day_window()[2]
+        self.state[9] = self.five_day_window()[3]
+        self.state[10] = self.five_day_window()[4]
+        self.state[11] = self.five_day_window()[5]
+        self.state[12] = self.five_day_window()[6]
+        self.state[13] = self.five_day_window()[7]
         
         self.max_stride = 5
         self.stride = self.max_stride # no longer varying it
@@ -104,7 +110,7 @@ class StocksEnv(gym.Env):
             retval = np.array(new_state), -100, False, { "msg": "nothing" }
             
         if action[0] == 0:
-            self.buycount = self.buycount + 1
+            self.buycount = self.buycount + 1:
             if action[1] * apl_open[cur_timestep] > self.state[2]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                         cur_value, *self.five_day_window()]
@@ -186,7 +192,7 @@ class StocksEnv(gym.Env):
         print ("\n",self.buycount,"  ",self.sitcount,"  ",self.sellcount)
         self.state = np.zeros(8)
         self.starting_cash = 200
-        self.cur_timestep = 1
+        self.cur_timestep = 41
         self.state[0] = random.randint(20,100)
         self.state[1] = random.randint(20,100)
         self.state[2] = random.randint(100,2000)
@@ -195,7 +201,14 @@ class StocksEnv(gym.Env):
         self.starting_portfolio_value = self.portfolio_value()
         self.state[5] = self.starting_portfolio_value
         self.state[6] = self.five_day_window()[0]
-        self.state[7] = self.five_day_window()[1]       
+        self.state[7] = self.five_day_window()[1]  
+        self.state[8] = self.five_day_window()[2]
+        self.state[9] = self.five_day_window()[3]
+        self.state[10] = self.five_day_window()[4]
+        self.state[11] = self.five_day_window()[5]
+        self.state[12] = self.five_day_window()[6]
+        self.state[13] = self.five_day_window()[7]
+        
         self.done = False
         self.buycount = 0
         self.sellcount = 0
@@ -222,7 +235,7 @@ class StocksEnv(gym.Env):
         return (apl_ * apl_open[step]) + (msf_ * msf_open[step]) 
            
     
-    
+    '''
     def five_day_window(self):
         step = self.cur_timestep
         if step < 5:
@@ -230,6 +243,20 @@ class StocksEnv(gym.Env):
         apl5 = apl_open[step-5:step].mean()
         msf5 = msf_open[step-5:step].mean()
         return [apl5, msf5]
+    '''
+    def five_day_window(self):
+        step = self.cur_timestep
+        if step < 5:
+            return [apl_open[0], msf_open[0]]
+        apl10 = apl_open[step-10:step].mean()
+        msf10 = msf_open[step-10:step].mean()
+        apl20 = apl_open[step-20:step-10].mean()
+        msf20 = msf_open[step-20:step-10].mean()
+        apl30 = apl_open[step-30:step-20].mean()
+        msf30 = apl_open[step-30:step-20].mean()
+        apl40 = msf_open[step-40:step-30].mean()
+        msf40 = msf_open[step-40:step-30].mean()
+        return [apl10, msf10, apl20, msf20, apl30, msf30, apl40, msf40]
     
     
     def render(self, mode='human'):
