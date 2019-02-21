@@ -22,11 +22,14 @@ class StocksEnv(gym.Env):
     
 
     def __init__(self):
+        
         self.starting_shares_mean = 0
         self.randomize_shares_std = 0
         self.starting_cash_mean = 200
         self.randomize_cash_std = 0
-        
+        self.buycount = 0
+        self.sellcount = 0
+        self.sitcount = 0
         #-----
         self.low_state = np.zeros((8,))
         self.high_state = np.zeros((8,))+100000000
@@ -94,12 +97,14 @@ class StocksEnv(gym.Env):
             return np.array(new_state), bonus+gain, True, { "msg": "done"}
         
         if action[0] == 2:
+            self.sitcount++
             new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                     self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
             self.state = np.array(new_state)
             retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "nothing" }
             
         if action[0] == 0:
+            self.buycount++
             if action[1] * apl_open[cur_timestep] > self.state[2]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                         cur_value, *self.five_day_window()]
@@ -117,6 +122,7 @@ class StocksEnv(gym.Env):
                 retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "bought AAPL"}
                 
         if action[0] == 3:
+            self.buycount++
             if action[1] * msf_open[cur_timestep] > self.state[2]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                         cur_value, *self.five_day_window()]
@@ -135,6 +141,7 @@ class StocksEnv(gym.Env):
         
 
         if action[0] == 1:
+            self.sellcount++
             if action[1] > self.state[0]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                         cur_value, *self.five_day_window()]
@@ -152,6 +159,7 @@ class StocksEnv(gym.Env):
                 retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold AAPL"}
                 
         if action[0] == 4:
+            self.sellcount++
             if action[1] > self.state[1]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                         cur_value, *self.five_day_window()]
@@ -175,6 +183,7 @@ class StocksEnv(gym.Env):
         return retval
 
     def reset(self):
+        print ("\n",self.buycount,"  ",self.sitcount,"  ",self.sellcount)
         self.state = np.zeros(8)
         self.starting_cash = 200
         self.cur_timestep = 1
@@ -188,6 +197,10 @@ class StocksEnv(gym.Env):
         self.state[6] = self.five_day_window()[0]
         self.state[7] = self.five_day_window()[1]       
         self.done = False
+        self.buycount = 0
+        self.sellcount = 0
+        self.sitcount = 0
+        
         #print("\nState:",self.state)
         return self.state
         
