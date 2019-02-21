@@ -8,7 +8,7 @@ import random
 import matplotlib.pyplot as plt
 
 import pickle
-with open("./aplmsfopencloseOG.pkl", "rb") as f:
+with open("./aplmsfopenclose.pkl", "rb") as f:
     d = pickle.load(f)
 
 
@@ -179,7 +179,7 @@ class StocksEnv(gym.Env):
         self.cur_timestep = 1
         self.state[0] = random.randint(0,10)
         self.state[1] = random.randint(0,10)
-        self.state[2] = 2000
+        self.state[2] = random.randint(100,200)
         self.state[3] = apl_open[self.cur_timestep]
         self.state[4] = msf_open[self.cur_timestep]
         self.starting_portfolio_value = self.portfolio_value()
