@@ -90,7 +90,7 @@ class StocksEnv(gym.Env):
             if self.state[0] > 0 and self.state[1] > 0:
                 bonus = self.diversification_bonus
             print("\nEpisode Terminating done  -- portfoliovalue is " , cur_value )
-            print("\nendstate",self.state)
+            #print("\nendstate",self.state)
             return np.array(new_state), bonus+gain, True, { "msg": "done"}
         
         if action[0] == 2:
@@ -170,8 +170,8 @@ class StocksEnv(gym.Env):
                 
         #print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2]," g ",gain)
         self.cur_timestep += self.stride
-        if retval[2] == True:
-            print("\nendstate",self.state)
+        #if retval[2] == True:
+         #   print("\nendstate",self.state)
         return retval
 
     def reset(self):
