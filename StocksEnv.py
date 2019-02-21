@@ -177,8 +177,8 @@ class StocksEnv(gym.Env):
         self.state = np.zeros(8)
         self.starting_cash = 200
         self.cur_timestep = 1
-        self.state[0] = 10 #random.randint(40,80)
-        self.state[1] = 10 #random.randint(40,80)
+        self.state[0] = 0 #random.randint(40,80)
+        self.state[1] = 0 #random.randint(40,80)
         self.state[2] = 2000
         self.state[3] = apl_open[self.cur_timestep]
         self.state[4] = msf_open[self.cur_timestep]
