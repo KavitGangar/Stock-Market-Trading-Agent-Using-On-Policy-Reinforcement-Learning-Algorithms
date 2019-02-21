@@ -17,7 +17,7 @@ apl_close = d["ac"]
 msf_open = d["mo"]
 msf_close = d["mc"]
 
- gain
+
 class StocksEnv(gym.Env):
     
 
