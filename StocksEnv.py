@@ -169,7 +169,7 @@ class StocksEnv(gym.Env):
         #print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2]," g ",gain)
         self.cur_timestep += self.stride
         if retval[2] == True:
-            print("\nendstate",state)
+            print("\nendstate",self.state)
         return retval
 
     def reset(self):
