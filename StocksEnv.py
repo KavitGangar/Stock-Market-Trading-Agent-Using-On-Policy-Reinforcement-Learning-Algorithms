@@ -48,7 +48,7 @@ class StocksEnv(gym.Env):
         
         self.starting_cash = 2000
 
-        self.series_length = 200pkl
+        self.series_length = 200
         self.starting_point = 1
         self.cur_timestep = self.starting_point
         
