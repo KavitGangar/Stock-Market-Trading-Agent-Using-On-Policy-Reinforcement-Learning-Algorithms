@@ -68,7 +68,7 @@ class StocksEnv(gym.Env):
         self.state[12] = self.five_day_window()[6]
         self.state[13] = self.five_day_window()[7]
         
-        self.max_stride = 5
+        self.max_stride = 3
         self.stride = self.max_stride # no longer varying it
         
         self.done = False
