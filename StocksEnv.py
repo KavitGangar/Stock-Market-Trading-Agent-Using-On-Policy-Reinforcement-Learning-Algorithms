@@ -164,7 +164,7 @@ class StocksEnv(gym.Env):
                 gain = cur_value - self.starting_portfolio_value
                 retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold AAPL"}
                 
-            if action[0] == 4:
+        if action[0] == 4:
             self.sellcount = self.sellcount + 1
             if action[1] > self.state[1]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
