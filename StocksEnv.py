@@ -192,7 +192,7 @@ class StocksEnv(gym.Env):
        # print ("\n",self.buycount,"  ",self.sitcount,"  ",self.sellcount)
         self.state = np.zeros(14)
         self.starting_cash = 200
-        self.cur_timestep = 41
+        self.cur_timestep = random.randint(41,100)
         self.state[0] = 0 #random.randint(0,20)
         self.state[1] = 0 #random.randint(0,20)
         self.state[2] = 2000 #random.randint(100,2000)
