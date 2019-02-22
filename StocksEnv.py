@@ -164,7 +164,7 @@ class StocksEnv(gym.Env):
                 gain = cur_value - self.starting_portfolio_value
                 retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold AAPL"}
                 
-        if action[0] == 4:
+nforcement learning to predict wind        if action[0] == 4:
             self.sellcount = self.sellcount + 1
             if action[1] > self.state[1]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
@@ -193,9 +193,9 @@ class StocksEnv(gym.Env):
         self.state = np.zeros(14)
         self.starting_cash = 200
         self.cur_timestep = 41
-        self.state[0] = random.randint(20,100)
-        self.state[1] = random.randint(20,100)
-        self.state[2] = random.randint(100,2000)
+        self.state[0] = 0 #random.randint(0,20)
+        self.state[1] = 0 #random.randint(0,20)
+        self.state[2] = 2000 #random.randint(100,2000)
         self.state[3] = apl_open[self.cur_timestep]
         self.state[4] = msf_open[self.cur_timestep]
         self.starting_portfolio_value = self.portfolio_value()
