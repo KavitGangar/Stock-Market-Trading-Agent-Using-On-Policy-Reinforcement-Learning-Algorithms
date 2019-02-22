@@ -107,7 +107,7 @@ class StocksEnv(gym.Env):
             new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                     self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
             self.state = np.array(new_state)
-            retval = np.array(new_state), -100, False, { "msg": "nothing" }
+            retval = np.array(new_state), 0, False, { "msg": "nothing" }
             
         if action[0] == 0:
             self.buycount = self.buycount + 1
