@@ -190,7 +190,7 @@ class StocksEnv(gym.Env):
         return retval
 
     def reset(self):
-       # print ("\n",self.buycount,"  ",self.sitcount,"  ",self.sellcount)
+        print ("\n",self.buycount,"  ",self.sitcount,"  ",self.sellcount)
         self.state = np.zeros(14)
         self.starting_cash = 200
         self.cur_timestep = 42 #random.randint(41,100)
