@@ -122,7 +122,7 @@ class StocksEnv(gym.Env):
                         self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
                 self.state = np.array(new_state)
                 #print("\nEpisode Terminating Bankrupt")
-                retval = np.array(new_state), 0000, False, { "msg": "bankrupted self"}
+                retval = np.array(new_state), -100000, False, { "msg": "bankrupted self"}
             else:
                 self.buycount_1 = self.buycount_1 + 1
                 apl_shares = self.state[0] + action[1]
@@ -142,7 +142,7 @@ class StocksEnv(gym.Env):
                         self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
                 self.state = np.array(new_state)
                 #print("\nEpisode Terminating Bankrupt__")
-                retval =  np.array(new_state), 0000, False, { "msg": "bankrupted self"}
+                retval =  np.array(new_state), -100000, False, { "msg": "bankrupted self"}
             else:
                 self.buycount_2 = self.buycount_2 + 1
                 msf_shares = self.state[1] + action[1]
@@ -163,7 +163,7 @@ class StocksEnv(gym.Env):
                         self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
                 self.state = np.array(new_state)
                     #print("\nEpisode Terminating soldmore")
-                retval = np.array(new_state), 0000, False, { "msg": "sold more than have"}
+                retval = np.array(new_state), -100000, False, { "msg": "sold more than have"}
             else:
                 self.sellcount_1 = self.sellcount_1 + 1
                 apl_shares = self.state[0] - action[1]
@@ -183,7 +183,7 @@ class StocksEnv(gym.Env):
                         self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
                 self.state = np.array(new_state)
                 #print("\nEpisode Terminating soldmore4")
-                retval = np.array(new_state), 0000, False, { "msg": "sold more than have"}
+                retval = np.array(new_state), -100000, False, { "msg": "sold more than have"}
             else:
                 self.sellcount_2 = self.sellcount_2 + 1
                 msf_shares = self.state[1] - action[1]
