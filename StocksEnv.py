@@ -51,6 +51,8 @@ class StocksEnv(gym.Env):
         self.series_length = 200
         self.starting_point = 42
         self.cur_timestep = self.starting_point
+        self.max_stride = 3
+        self.stride = self.max_stride # no longer varying it
         
         self.state[0] = random.randint(0,10)
         self.state[1] = random.randint(0,10)
@@ -68,8 +70,7 @@ class StocksEnv(gym.Env):
         self.state[12] = self.five_day_window()[6]
         self.state[13] = self.five_day_window()[7]
         
-        self.max_stride = 3
-        self.stride = self.max_stride # no longer varying it
+
         
         self.done = False
         self.diversification_bonus = 1.
@@ -193,6 +194,10 @@ class StocksEnv(gym.Env):
         self.state = np.zeros(14)
         self.starting_cash = 200
         self.cur_timestep = 42 #random.randint(41,100)
+        self.max_stride = 3
+        self.stride = self.max_stride # no longer varying it
+        
+        
         self.state[0] = 0 #random.randint(0,20)
         self.state[1] = 0 #random.randint(0,20)
         self.state[2] = 2000 #random.randint(100,2000)
