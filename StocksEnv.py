@@ -113,7 +113,9 @@ class StocksEnv(gym.Env):
             new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
                     self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
             self.state = np.array(new_state)
-            retval = np.array(new_state), 0, False, { "msg": "nothing" }
+            cur_value = self.portfolio_value()
+            gain = cur_value - self.starting_portfolio_value
+            retval = np.array(new_state),-ts_left+gain, False, { "msg": "nothing" }
             
         if action[0] == 0:
             if action[1] * apl_open[cur_timestep] > self.state[2]:
