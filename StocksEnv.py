@@ -49,7 +49,7 @@ class StocksEnv(gym.Env):
         self.starting_cash = 2000
 
         self.series_length = 200
-        self.starting_point = 41
+        self.starting_point = 42
         self.cur_timestep = self.starting_point
         
         self.state[0] = random.randint(0,10)
@@ -113,10 +113,10 @@ class StocksEnv(gym.Env):
             self.buycount = self.buycount + 1
             if action[1] * apl_open[cur_timestep] > self.state[2]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                        cur_value, *self.five_day_window()]
+                        self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
                 self.state = np.array(new_state)
                 #print("\nEpisode Terminating Bankrupt")
-                retval = np.array(new_state), -100000, True, { "msg": "bankrupted self"}
+                retval = np.array(new_state), -100000, False, { "msg": "bankrupted self"}
             else:
                 apl_shares = self.state[0] + action[1]
                 cash_spent = action[1] * apl_open[cur_timestep] * 1.1
@@ -131,10 +131,10 @@ class StocksEnv(gym.Env):
             self.buycount = self.buycount + 1
             if action[1] * msf_open[cur_timestep] > self.state[2]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                        cur_value, *self.five_day_window()]
+                        self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
                 self.state = np.array(new_state)
                 #print("\nEpisode Terminating Bankrupt__")
-                retval =  np.array(new_state), -100000, True, { "msg": "bankrupted self"}
+                retval =  np.array(new_state), -100000, False, { "msg": "bankrupted self"}
             else:
                 msf_shares = self.state[1] + action[1]
                 cash_spent = action[1] * msf_open[cur_timestep] * 1.1
@@ -150,10 +150,10 @@ class StocksEnv(gym.Env):
             self.sellcount = self.sellcount + 1
             if action[1] > self.state[0]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                        cur_value, *self.five_day_window()]
+                        self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
                 self.state = np.array(new_state)
-                #print("\nEpisode Terminating soldmore")
-                retval = np.array(new_state), -100000, True, { "msg": "sold more than have"}
+                    #print("\nEpisode Terminating soldmore")
+                retval = np.array(new_state), -100000, False, { "msg": "sold more than have"}
             else:
                 apl_shares = self.state[0] - action[1]
                 cash_gained = action[1] * apl_open[cur_timestep] * 0.9
@@ -168,10 +168,10 @@ class StocksEnv(gym.Env):
             self.sellcount = self.sellcount + 1
             if action[1] > self.state[1]:
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                        cur_value, *self.five_day_window()]
+                        self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
                 self.state = np.array(new_state)
                 #print("\nEpisode Terminating soldmore4")
-                retval = np.array(new_state), -100000, True, { "msg": "sold more than have"}
+                retval = np.array(new_state), -100000, False, { "msg": "sold more than have"}
             else: 
                 msf_shares = self.state[1] - action[1]
                 cash_gained = action[1] * msf_open[cur_timestep] * 0.9
@@ -192,7 +192,7 @@ class StocksEnv(gym.Env):
        # print ("\n",self.buycount,"  ",self.sitcount,"  ",self.sellcount)
         self.state = np.zeros(14)
         self.starting_cash = 200
-        self.cur_timestep = random.randint(41,100)
+        self.cur_timestep = 42 #random.randint(41,100)
         self.state[0] = 0 #random.randint(0,20)
         self.state[1] = 0 #random.randint(0,20)
         self.state[2] = 2000 #random.randint(100,2000)
@@ -245,8 +245,8 @@ class StocksEnv(gym.Env):
         return [apl5, msf5]
     '''
     def five_day_window(self):
-        step = self.cur_timestep
-        if step < 5:
+        step = self.cur_timestep + self.stride
+        if step < 41:
             return [apl_open[0], msf_open[0]]
         apl10 = apl_open[step-10:step].mean()
         msf10 = msf_open[step-10:step].mean()
