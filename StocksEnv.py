@@ -116,7 +116,6 @@ class StocksEnv(gym.Env):
             retval = np.array(new_state), 0, False, { "msg": "nothing" }
             
         if action[0] == 0:
-            self.buycount_1 = self.buycount_1 + 1
             if action[1] * apl_open[cur_timestep] > self.state[2]:
                 self.bccount = self.bccount + 1
                 new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
@@ -145,7 +144,7 @@ class StocksEnv(gym.Env):
                 #print("\nEpisode Terminating Bankrupt__")
                 retval =  np.array(new_state), -100000, False, { "msg": "bankrupted self"}
             else:
-                self.buycount_1 = self.buycount_1 + 1
+                self.buycount_2 = self.buycount_2 + 1
                 msf_shares = self.state[1] + action[1]
                 cash_spent = action[1] * msf_open[cur_timestep] * 1.1
                 new_state = [self.state[0], msf_shares, self.state[2] - cash_spent, *self.next_opening_price(), \
