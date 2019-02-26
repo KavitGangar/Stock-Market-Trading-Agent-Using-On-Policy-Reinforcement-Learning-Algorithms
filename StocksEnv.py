@@ -134,7 +134,7 @@ class StocksEnv(gym.Env):
                 self.state = np.array(new_state)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+gain+100, False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*100)+100, False, { "msg": "bought AAPL"}
                 
         if action[0] == 3:
             
@@ -154,7 +154,7 @@ class StocksEnv(gym.Env):
                 self.state = np.array(new_state)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+gain+100, False, { "msg": "bought MSFT"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*100)+100, False, { "msg": "bought MSFT"}
         
 
         if action[0] == 1:
