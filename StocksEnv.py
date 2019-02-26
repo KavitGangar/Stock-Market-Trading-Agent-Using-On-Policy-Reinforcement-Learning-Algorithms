@@ -8,7 +8,7 @@ import random
 import matplotlib.pyplot as plt
 
 import pickle
-with open("./aplmsfopencloseOG.pkl", "rb") as f:
+with open("./aplmsfopenclose.pkl", "rb") as f:
     d = pickle.load(f)
 
 
@@ -52,7 +52,7 @@ class StocksEnv(gym.Env):
         
         self.starting_cash = 2000
 
-        self.series_length = 100
+        self.series_length = 200
         self.starting_point = 42
         self.cur_timestep = self.starting_point
         self.max_stride = 3
