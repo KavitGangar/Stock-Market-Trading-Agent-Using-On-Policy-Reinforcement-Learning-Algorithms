@@ -58,6 +58,8 @@ class StocksEnv(gym.Env):
         self.max_stride = 3
         self.stride = self.max_stride # no longer varying it
         
+        
+        
         self.state[0] = random.randint(0,10)
         self.state[1] = random.randint(0,10)
         self.starting_portfolio_value = self.portfolio_value_open()
@@ -74,6 +76,8 @@ class StocksEnv(gym.Env):
         self.state[12] = self.five_day_window()[6]
         self.state[13] = self.five_day_window()[7]
         
+        self.openingAplVal = self.state[0] * self.state[3] 
+        self.openingMsfVal = self.state[1] * self.state[4]
 
         
         self.done = False
@@ -85,13 +89,14 @@ class StocksEnv(gym.Env):
         return [seed]
 
     def step(self, action):
-
+        
       	#print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
         action = [action,1.]
         #print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
         cur_timestep = self.cur_timestep
         #ts_left = self.series_length*self.stride - (cur_timestep - self.starting_point)
         ts_left = 0
+        partial = 0
         retval = None
         cur_value = self.portfolio_value()
         gain = cur_value - self.starting_portfolio_value
@@ -134,7 +139,8 @@ class StocksEnv(gym.Env):
                 self.state = np.array(new_state)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+100, False, { "msg": "bought AAPL"}
+                partial = apl_close[cur_timestep] - apl_open[cur_timestep]
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partia1*50)+100, False, { "msg": "bought AAPL"}
                 
         if action[0] == 3:
             
@@ -154,7 +160,8 @@ class StocksEnv(gym.Env):
                 self.state = np.array(new_state)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+100, False, { "msg": "bought MSFT"}
+                partial = msf_close[cur_timestep] - msf_open[cur_timestep]
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+100+(partia1*50), False, { "msg": "bought MSFT"}
         
 
         if action[0] == 1:
@@ -175,7 +182,8 @@ class StocksEnv(gym.Env):
                 self.state = np.array(new_state)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+100, False, { "msg": "sold AAPL"}
+                partial = -(apl_close[cur_timestep] - apl_open[cur_timestep])
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*20)+100, False, { "msg": "sold AAPL"}
                 
         if action[0] == 4:
             
@@ -195,7 +203,8 @@ class StocksEnv(gym.Env):
                 self.state = np.array(new_state)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+100, False, { "msg": "sold MSFT"}
+                partial = -(msf_close[cur_timestep] - msf_open[cur_timestep])
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*20)+100, False, { "msg": "sold MSFT"}
                 
         #print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2]," g ",gain)
         self.cur_timestep += self.stride
@@ -228,6 +237,10 @@ class StocksEnv(gym.Env):
         self.state[12] = self.five_day_window()[6]
         self.state[13] = self.five_day_window()[7]
         
+        
+        self.openingAplVal = self.state[0] * self.state[3] 
+        self.openingMsfVal = self.state[1] * self.state[4]
+        
         self.done = False
         self.buycount_1 = 0
         self.sellcount_1 = 0
@@ -257,7 +270,9 @@ class StocksEnv(gym.Env):
         step = self.cur_timestep + self.stride
         return (apl_ * apl_open[step]) + (msf_ * msf_open[step]) 
            
-    
+    def apl_gain(){
+        return (self.state[0] * apl_close[self.cur_timestep]) - self.openingAplVal   
+    }    
     '''
     def five_day_window(self):
         step = self.cur_timestep
