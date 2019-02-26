@@ -270,9 +270,7 @@ class StocksEnv(gym.Env):
         step = self.cur_timestep + self.stride
         return (apl_ * apl_open[step]) + (msf_ * msf_open[step]) 
            
-    def apl_gain(){
-        return (self.state[0] * apl_close[self.cur_timestep]) - self.openingAplVal   
-    }    
+
     '''
     def five_day_window(self):
         step = self.cur_timestep
