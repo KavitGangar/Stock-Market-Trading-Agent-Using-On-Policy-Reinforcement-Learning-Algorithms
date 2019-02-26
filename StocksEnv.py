@@ -115,7 +115,7 @@ class StocksEnv(gym.Env):
             self.state = np.array(new_state)
             cur_value = self.portfolio_value()
             gain = cur_value - self.starting_portfolio_value
-            retval = np.array(new_state),0, False, { "msg": "nothing" }
+            retval = np.array(new_state),gain, False, { "msg": "nothing" }
             
         if action[0] == 0:
             if action[1] * apl_open[cur_timestep] > self.state[2]:
