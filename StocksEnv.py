@@ -140,7 +140,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 partial = apl_close[cur_timestep] - apl_open[cur_timestep]
-                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partia1*50)+100, False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*50)+100, False, { "msg": "bought AAPL"}
                 
         if action[0] == 3:
             
