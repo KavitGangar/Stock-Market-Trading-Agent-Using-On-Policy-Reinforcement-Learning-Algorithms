@@ -212,9 +212,9 @@ class StocksEnv(gym.Env):
         self.stride = self.max_stride # no longer varying it
         
         
-        self.state[0] = 10 #random.randint(0,20)
-        self.state[1] = 10 #random.randint(0,20)
-        self.state[2] = 2000 #random.randint(100,2000)
+        self.state[0] = random.randint(0,20)
+        self.state[1] = random.randint(0,20)
+        self.state[2] = random.randint(100,2000)
         self.state[3] = apl_open[self.cur_timestep]
         self.state[4] = msf_open[self.cur_timestep]
         self.starting_portfolio_value = self.portfolio_value()
