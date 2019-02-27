@@ -111,7 +111,7 @@ class StocksEnv(gym.Env):
             #print("\nEpisode Terminating done  -- portfoliovalue is " , cur_value )
             #print("\nendstate",self.state)
             print("\nProfit",gain)
-            return np.array(new_state), bonus+(gain*100), True, { "msg": "done"}
+            return np.array(new_state), bonus+(gain*1000), True, { "msg": "done"}
         
         if action[0] == 2:
             self.sitcount = self.sitcount + 1
@@ -140,7 +140,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 partial = apl_close[cur_timestep] - apl_open[cur_timestep]
-                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*50)+100, False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*50), False, { "msg": "bought AAPL"}
                 
         if action[0] == 3:
             
@@ -161,7 +161,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 partial = msf_close[cur_timestep] - msf_open[cur_timestep]
-                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+100+(partial*50), False, { "msg": "bought MSFT"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*50), False, { "msg": "bought MSFT"}
         
 
         if action[0] == 1:
@@ -183,7 +183,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 partial = -(apl_close[cur_timestep] - apl_open[cur_timestep])
-                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*20)+100, False, { "msg": "sold AAPL"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*20), False, { "msg": "sold AAPL"}
                 
         if action[0] == 4:
             
@@ -204,7 +204,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 partial = -(msf_close[cur_timestep] - msf_open[cur_timestep])
-                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*20)+100, False, { "msg": "sold MSFT"}
+                retval = np.array(new_state), self.inaction_penalty-ts_left+(gain*10)+(partial*20), False, { "msg": "sold MSFT"}
                 
         #print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2]," g ",gain)
         self.cur_timestep += self.stride
