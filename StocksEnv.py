@@ -102,7 +102,7 @@ class StocksEnv(gym.Env):
             if action[1] > self.state[0]:
                 self.nothingpseudo+=1
                 new_state = [self.state[0], self.state[1] ,self.next_opening_price(), \
-                     self.five_day_window(),self.state[5]]
+                     self.five_day_window(),self.state[4]]
                 self.state = new_state
                 self.reward += -100000
                 retval = np.array(new_state),  -100000 , False, { "msg": "nothing" }
@@ -112,10 +112,10 @@ class StocksEnv(gym.Env):
                 apl_shares = self.state[0] - action[1]
                 cash_gained = action[1] * apl_open[cur_timestep] * 0.9
                 new_state = [apl_shares , self.state[1] + cash_gained, self.next_opening_price(), \
-                       self.five_day_window(),self.state[5]]
+                       self.five_day_window(),self.state[4]]
                 
                 self.state = new_state
-                profit_sell = apl_open[cur_timestep] - self.state[5]
+                profit_sell = apl_open[cur_timestep] - self.state[4]
                 self.ps.append(profit_sell)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
@@ -127,7 +127,7 @@ class StocksEnv(gym.Env):
         if action[0] == 2:
             self.nothing += 1
             new_state = [self.state[0], self.state[1] ,self.next_opening_price(), \
-                     self.five_day_window(),self.state[5]]
+                     self.five_day_window(),self.state[4]]
             self.state = new_state
             self.reward += -self.inaction_penalty-ts_left +gain
             retval = np.array(new_state),  -self.inaction_penalty-ts_left +gain , False, { "msg": "nothing" }
@@ -135,7 +135,7 @@ class StocksEnv(gym.Env):
         if action[0] == 0:
             if action[1] * apl_open[cur_timestep] > self.state[1]:
                 new_state = [self.state[0], self.state[1], self.next_opening_price(), \
-                         self.five_day_window(),self.state[5]]
+                         self.five_day_window(),self.state[4]]
                 self.state = new_state
                 self.reward += -100000
                 print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
@@ -147,7 +147,7 @@ class StocksEnv(gym.Env):
                 apl_shares = self.state[0] + action[1]
                 cash_spent = action[1] * apl_open[cur_timestep] * 1.1
                 new_state = [apl_shares, self.state[1] - cash_spent, self.next_opening_price(), \
-                        self.five_day_window(),calcAvg(self.state[5],apl_open[cur_timestep])]
+                        self.five_day_window(),calcAvg(self.state[4],apl_open[cur_timestep])]
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
