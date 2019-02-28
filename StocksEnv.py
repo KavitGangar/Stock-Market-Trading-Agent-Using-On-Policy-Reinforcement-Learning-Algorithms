@@ -8,7 +8,7 @@ import random
 import matplotlib.pyplot as plt
 
 import pickle
-with open("./aplmsfopenclose.pkl", "rb") as f:
+with open("./aplmsfopencloseOG.pkl", "rb") as f:
     d = pickle.load(f)
 
 
@@ -138,7 +138,7 @@ class StocksEnv(gym.Env):
                          self.five_day_window(),self.state[4]]
                 self.state = new_state
                 self.reward += -100000
-                print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
+               # print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
                 
                 retval = np.array(new_state), -100000 ,False, { "msg": "bankrupted self"}
                 
@@ -169,8 +169,8 @@ class StocksEnv(gym.Env):
         self.starting_cash = 200
         self.cur_timestep = random.randint(0,100)
         self.starting_point = self.cur_timestep
-        self.state[0] = 0
-        self.state[1] = random.randint(500,1000)
+        self.state[0] = 10
+        self.state[1] = 500 #random.randint(500,1000)
         self.state[2] = apl_open[self.cur_timestep]
         self.starting_portfolio_value = self.portfolio_value_states()
         self.state[3] = self.five_day_window()
@@ -181,7 +181,7 @@ class StocksEnv(gym.Env):
         self.nothingpseudo=0
         self.done = False
         self.reward = 0
-        self.ps = 0
+        self.ps = []
         return self.state
 
     
@@ -213,7 +213,7 @@ class StocksEnv(gym.Env):
     def calcAvg(self,prev,new):
         return ((prev*self.state[0])+new)/(self.state[0]+1)
         
-        
+    
     
     def render(self, mode='human'):
         print("Render called")
