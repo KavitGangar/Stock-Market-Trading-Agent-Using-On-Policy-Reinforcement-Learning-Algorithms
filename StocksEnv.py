@@ -68,7 +68,7 @@ class StocksEnv(gym.Env):
         self.diversification_bonus = 100
         self.inaction_penalty = 0
         self.ps = []
-
+        self.g_t = []
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
@@ -84,6 +84,7 @@ class StocksEnv(gym.Env):
         cur_value = self.portfolio_value()
         gain = cur_value - self.starting_portfolio_value
         
+        
         if cur_timestep >= self.starting_point + (self.series_length * self.stride):
             new_state = [self.state[0], self.state[1], self.next_opening_price(), \
                          self.five_day_window()]
@@ -91,9 +92,9 @@ class StocksEnv(gym.Env):
             bonus = 0.
             if self.state[0] > 0 :
                 bonus = self.diversification_bonus
-                
+            self.g_t.append(gain)    
             self.reward +=bonus + gain
-            print("\n  REWARD = ",self.reward, " Episode Terminating done  -- profit is ",gain ," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
+            print("\n " gain ," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
             return np.array(new_state), bonus + gain , True, { "msg": "done"}
         
         
@@ -105,7 +106,7 @@ class StocksEnv(gym.Env):
                      self.five_day_window(),self.state[4]]
                 self.state = new_state
                 self.reward += -100000
-                retval = np.array(new_state),  -100000 , False, { "msg": "nothing" }
+                retval = np.array(new_state), -ts_left + gain-100000 , False, { "msg": "nothing" }
 
             else:
                 self.sellcount += 1
@@ -120,7 +121,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), gain + (profit_sell*10) , False, { "msg": "sold AAPL"}
+                retval = np.array(new_state), -ts_left + gain , False, { "msg": "sold AAPL"}
         
         
         
@@ -130,7 +131,7 @@ class StocksEnv(gym.Env):
                      self.five_day_window(),self.state[4]]
             self.state = new_state
             self.reward += -self.inaction_penalty-ts_left +gain
-            retval = np.array(new_state),   gain - 1 , False, { "msg": "nothing" }
+            retval = np.array(new_state),   -ts_left + gain , False, { "msg": "nothing" }
         
         if action[0] == 0:
             if action[1] * apl_open[cur_timestep] > self.state[1]:
@@ -140,7 +141,7 @@ class StocksEnv(gym.Env):
                 self.reward += -100000
                # print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
                 
-                retval = np.array(new_state), -100000 ,False, { "msg": "bankrupted self"}
+                retval = np.array(new_state), -ts_left + gain-100000 ,False, { "msg": "bankrupted self"}
                 
             else:
                 self.buycount+=1
@@ -152,7 +153,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), gain + 1  , False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), -ts_left + gain , False, { "msg": "bought AAPL"}
                 
         
 
@@ -182,6 +183,7 @@ class StocksEnv(gym.Env):
         self.done = False
         self.reward = 0
         self.ps = []
+        self.g_t = []
         return self.state
 
     
@@ -217,6 +219,7 @@ class StocksEnv(gym.Env):
     
     def render(self, mode='human'):
         print("Render called")
+        
         
     def close(self):
         if self.viewer:
