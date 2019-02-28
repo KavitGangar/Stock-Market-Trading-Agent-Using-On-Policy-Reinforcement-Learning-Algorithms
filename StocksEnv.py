@@ -152,7 +152,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left + gain - cashspent + 10  , False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), -ts_left + gain - cash_spent + 10  , False, { "msg": "bought AAPL"}
                 
         
 
