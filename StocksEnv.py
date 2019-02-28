@@ -28,8 +28,8 @@ class StocksEnv(gym.Env):
         #self.randomize_cash_std = 0
         
         #-----
-        self.low_state = np.zeros((5,))
-        self.high_state = np.zeros((5,))+1000000
+        self.low_state = np.zeros((6,))
+        self.high_state = np.zeros((6,))+1000000
 
         self.viewer = None
 
@@ -41,7 +41,7 @@ class StocksEnv(gym.Env):
         
         #===
         
-        self.state = np.zeros(5)
+        self.state = np.zeros(6)
         
         self.starting_cash = 2000
         self.buycount=0
@@ -121,7 +121,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left + gain + profit_sell + self.giveShareRew() , False, { "msg": "sold AAPL"}
+                retval = np.array(new_state), -ts_left + gain + (profit_sell*10) + self.giveShareRew() , False, { "msg": "sold AAPL"}
         
         
         
@@ -166,7 +166,7 @@ class StocksEnv(gym.Env):
         return retval
 
     def reset(self):
-        self.state = np.zeros(5)
+        self.state = np.zeros(6)
         self.starting_cash = 2500
         self.cur_timestep = 10
         self.starting_point = self.cur_timestep
