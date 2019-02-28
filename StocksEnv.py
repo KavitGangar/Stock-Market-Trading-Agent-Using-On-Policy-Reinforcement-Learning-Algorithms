@@ -167,7 +167,7 @@ class StocksEnv(gym.Env):
 
     def reset(self):
         self.state = np.zeros(5)
-        self.starting_cash = 200
+        self.starting_cash = 2500
         self.cur_timestep = random.randint(0,100)
         self.starting_point = self.cur_timestep
         self.state[0] = 10
