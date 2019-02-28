@@ -18,7 +18,7 @@ msf_open = d["mo"]
 msf_close = d["mc"]
 
 
-class StocksEnvAAPL(gym.Env):
+class StocksEnv(gym.Env):
     
 
     def __init__(self):
