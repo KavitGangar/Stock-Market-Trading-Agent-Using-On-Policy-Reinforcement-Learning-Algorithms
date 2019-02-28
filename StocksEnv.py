@@ -67,13 +67,14 @@ class StocksEnvAAPL(gym.Env):
         self.reward = 0
         self.diversification_bonus = 100
         self.inaction_penalty = 0
+        self.ps = []
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
     def step(self, action):
-
+        profit_sell = 0
         #print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
         action = [action,1.]
         #print("\n previous state", " pf- " ,self.portfolio_value()," - ",self.state[0], " - ",self.state[1]," - ",self.state[2])
@@ -101,29 +102,32 @@ class StocksEnvAAPL(gym.Env):
             if action[1] > self.state[0]:
                 self.nothingpseudo+=1
                 new_state = [self.state[0], self.state[1] ,self.next_opening_price(), \
-                     self.five_day_window()]
+                     self.five_day_window(),self.state[5]]
                 self.state = new_state
                 self.reward += -100000
                 retval = np.array(new_state),  -100000 , False, { "msg": "nothing" }
 
             else:
-                self.sellcount+=1
+                self.sellcount += 1
                 apl_shares = self.state[0] - action[1]
                 cash_gained = action[1] * apl_open[cur_timestep] * 0.9
                 new_state = [apl_shares , self.state[1] + cash_gained, self.next_opening_price(), \
-                       self.five_day_window()]
+                       self.five_day_window(),self.state[5]]
+                
                 self.state = new_state
+                profit_sell = apl_open[cur_timestep] - self.state[5]
+                self.ps.append(profit_sell)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left +gain , False, { "msg": "sold AAPL"}
+                retval = np.array(new_state), -ts_left +gain + profit_sell , False, { "msg": "sold AAPL"}
         
         
         
         if action[0] == 2:
             self.nothing += 1
             new_state = [self.state[0], self.state[1] ,self.next_opening_price(), \
-                     self.five_day_window()]
+                     self.five_day_window(),self.state[5]]
             self.state = new_state
             self.reward += -self.inaction_penalty-ts_left +gain
             retval = np.array(new_state),  -self.inaction_penalty-ts_left +gain , False, { "msg": "nothing" }
@@ -131,24 +135,24 @@ class StocksEnvAAPL(gym.Env):
         if action[0] == 0:
             if action[1] * apl_open[cur_timestep] > self.state[1]:
                 new_state = [self.state[0], self.state[1], self.next_opening_price(), \
-                         self.five_day_window()]
+                         self.five_day_window(),self.state[5]]
                 self.state = new_state
                 self.reward += -100000
                 print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
                 
-                retval = np.array(new_state), -100000 , True, { "msg": "bankrupted self"}
+                retval = np.array(new_state), -100000 ,False, { "msg": "bankrupted self"}
                 
             else:
                 self.buycount+=1
                 apl_shares = self.state[0] + action[1]
                 cash_spent = action[1] * apl_open[cur_timestep] * 1.1
                 new_state = [apl_shares, self.state[1] - cash_spent, self.next_opening_price(), \
-                        self.five_day_window()]
+                        self.five_day_window(),calcAvg(self.state[5],apl_open[cur_timestep])]
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left + gain , False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), -ts_left + gain - cashspent  , False, { "msg": "bought AAPL"}
                 
         
 
@@ -170,12 +174,14 @@ class StocksEnvAAPL(gym.Env):
         self.state[2] = apl_open[self.cur_timestep]
         self.starting_portfolio_value = self.portfolio_value_states()
         self.state[3] = self.five_day_window()
+        self.state[4] = apl_open[self.cur_timestep]
         self.buycount=0
         self.sellcount=0
         self.nothing=0
         self.nothingpseudo=0
         self.done = False
         self.reward = 0
+        self.ps = 0
         return self.state
 
     
@@ -194,7 +200,7 @@ class StocksEnvAAPL(gym.Env):
         step = self.cur_timestep + self.stride
         return (apl_ * apl_open[step])
 
-
+    
 
     def five_day_window(self):
         step = self.cur_timestep
@@ -204,6 +210,10 @@ class StocksEnvAAPL(gym.Env):
         
         return apl5
     
+    def calcAvg(self,prev,new):
+        return ((prev*self.state[0])+new)/(self.state[0]+1)
+        
+        
     
     def render(self, mode='human'):
         print("Render called")
