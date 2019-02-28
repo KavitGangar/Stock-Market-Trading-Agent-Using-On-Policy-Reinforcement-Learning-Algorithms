@@ -147,7 +147,7 @@ class StocksEnv(gym.Env):
                 apl_shares = self.state[0] + action[1]
                 cash_spent = action[1] * apl_open[cur_timestep] * 1.1
                 new_state = [apl_shares, self.state[1] - cash_spent, self.next_opening_price(), \
-                        self.five_day_window(),calcAvg(self.state[4],apl_open[cur_timestep])]
+                        self.five_day_window(),self.calcAvg(self.state[4],apl_open[cur_timestep])]
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
