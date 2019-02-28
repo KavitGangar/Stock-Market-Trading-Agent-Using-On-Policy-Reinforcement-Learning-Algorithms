@@ -94,7 +94,7 @@ class StocksEnv(gym.Env):
                 bonus = self.diversification_bonus
             self.g_t.append(gain)    
             self.reward +=bonus + gain
-            print("\n " gain ," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
+            print("\n ", gain ," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
             return np.array(new_state), bonus + gain , True, { "msg": "done"}
         
         
