@@ -28,8 +28,8 @@ class StocksEnv(gym.Env):
         #self.randomize_cash_std = 0
         
         #-----
-        self.low_state = np.zeros((4,))
-        self.high_state = np.zeros((4,))+1000000
+        self.low_state = np.zeros((5,))
+        self.high_state = np.zeros((5,))+1000000
 
         self.viewer = None
 
@@ -79,7 +79,7 @@ class StocksEnv(gym.Env):
         action = [action,1.]
         #print("\n previous state", " pf- " ,self.portfolio_value()," - ",self.state[0], " - ",self.state[1]," - ",self.state[2])
         cur_timestep = self.cur_timestep
-        ts_left = self.series_length* self.stride - (cur_timestep - self.starting_point)
+        ts_left = 0 # self.series_length* self.stride - (cur_timestep - self.starting_point)
         retval = None
         cur_value = self.portfolio_value()
         gain = cur_value - self.starting_portfolio_value
@@ -152,7 +152,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left + gain - cashspent  , False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), -ts_left + gain - cashspent + 10  , False, { "msg": "bought AAPL"}
                 
         
 
