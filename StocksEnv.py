@@ -171,7 +171,7 @@ class StocksEnv(gym.Env):
         self.cur_timestep = random.randint(0,100)
         self.starting_point = self.cur_timestep
         self.state[0] = 10
-        self.state[1] = 500 #random.randint(500,1000)
+        self.state[1] = 2500 #random.randint(500,1000)
         self.state[2] = apl_open[self.cur_timestep]
         self.starting_portfolio_value = self.portfolio_value_states()
         self.state[3] = self.five_day_window()
