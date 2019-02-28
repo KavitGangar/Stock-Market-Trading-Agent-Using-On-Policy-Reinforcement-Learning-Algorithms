@@ -183,7 +183,7 @@ class StocksEnv(gym.Env):
         self.done = False
         self.reward = 0
         self.ps = []
-        self.g_t = []
+        
         return self.state
 
     
