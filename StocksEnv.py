@@ -121,7 +121,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left + gain , False, { "msg": "sold AAPL"}
+                retval = np.array(new_state), -ts_left + gain + profit_sell, False, { "msg": "sold AAPL"}
         
         
         
@@ -141,7 +141,7 @@ class StocksEnv(gym.Env):
                 self.reward += -100000
                # print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
                 
-                retval = np.array(new_state), -ts_left + gain ,False, { "msg": "bankrupted self"}
+                retval = np.array(new_state), -ts_left + gain + 1 ,False, { "msg": "bankrupted self"}
                 
             else:
                 self.buycount+=1
