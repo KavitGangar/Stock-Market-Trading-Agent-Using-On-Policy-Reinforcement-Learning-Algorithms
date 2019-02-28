@@ -106,7 +106,7 @@ class StocksEnv(gym.Env):
                      self.five_day_window(),self.state[4]]
                 self.state = new_state
                 self.reward += -100000
-                retval = np.array(new_state), -ts_left + gain-100000 , False, { "msg": "nothing" }
+                retval = np.array(new_state), -ts_left + gain , False, { "msg": "nothing" }
 
             else:
                 self.sellcount += 1
@@ -141,7 +141,7 @@ class StocksEnv(gym.Env):
                 self.reward += -100000
                # print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
                 
-                retval = np.array(new_state), -ts_left + gain-100000 ,False, { "msg": "bankrupted self"}
+                retval = np.array(new_state), -ts_left + gain ,False, { "msg": "bankrupted self"}
                 
             else:
                 self.buycount+=1
