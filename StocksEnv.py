@@ -106,7 +106,7 @@ class StocksEnv(gym.Env):
                      self.five_day_window(),self.state[4],self.next_open_price(self.state[0])]
                 self.state = new_state
                 self.reward += -100000
-                retval = np.array(new_state), -ts_left + gain*100 -1000 , False, { "msg": "nothing" }
+                retval = np.array(new_state), -ts_left  -1000 , False, { "msg": "nothing" }
 
             else:
                 self.sellcount += 1
@@ -121,7 +121,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left + gain*100 + (profit_sell*10) + self.giveShareRew() , False, { "msg": "sold AAPL"}
+                retval = np.array(new_state), -ts_left  + (profit_sell*10) + self.giveShareRew() , False, { "msg": "sold AAPL"}
         
         
         
@@ -131,7 +131,7 @@ class StocksEnv(gym.Env):
                      self.five_day_window(),self.state[4],self.next_open_price(self.state[0])]
             self.state = new_state
             self.reward += -self.inaction_penalty-ts_left +gain*100
-            retval = np.array(new_state),   -ts_left + gain*100 +self.giveShareRew() , False, { "msg": "nothing" }
+            retval = np.array(new_state),   -ts_left + self.giveShareRew() , False, { "msg": "nothing" }
         
         if action[0] == 0:
             if action[1] * apl_open[cur_timestep] > self.state[1]:
@@ -141,7 +141,7 @@ class StocksEnv(gym.Env):
                 self.reward += -100000
                # print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
                 
-                retval = np.array(new_state), -ts_left + gain*100 -1000 ,False, { "msg": "bankrupted self"}
+                retval = np.array(new_state), -ts_left -1000 ,False, { "msg": "bankrupted self"}
                 
             else:
                 self.buycount+=1
@@ -153,7 +153,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left + gain*100 + self.giveShareRew(), False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), -ts_left + self.giveShareRew(), False, { "msg": "bought AAPL"}
                 
         
 
