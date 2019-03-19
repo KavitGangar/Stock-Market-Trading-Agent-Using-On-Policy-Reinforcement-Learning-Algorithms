@@ -211,7 +211,7 @@ class StocksEnv(gym.Env):
             return apl_open[0]
         apl5 = apl_open[step-5:step].mean()
         
-        return apl_open[step-10,step]
+        return apl_open[step-10:step]
     
     def calcAvg(self,prev,new):
         return ((prev*self.state[0])+new)/(self.state[0]+1)
