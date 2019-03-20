@@ -79,7 +79,7 @@ class StocksEnv(gym.Env):
         action = [action,1.]
         #print("\n previous state", " pf- " ,self.portfolio_value()," - ",self.state[0], " - ",self.state[1]," - ",self.state[2])
         cur_timestep = self.cur_timestep
-        ts_left = self.series_length - (cur_timestep - self.starting_point)
+        ts_left = 0 # self.series_length * self.stride - (cur_timestep - self.starting_point)
         retval = None
         cur_value = self.portfolio_value()
         gain = cur_value - self.starting_portfolio_value
@@ -217,7 +217,7 @@ class StocksEnv(gym.Env):
         return ((prev*self.state[0])+new)/(self.state[0]+1)
     
     def giveShareRew(self):
-        return self.state[0]/10
+        return 0 #self.state[0]/10
     
     
     def render(self, mode='human'):
