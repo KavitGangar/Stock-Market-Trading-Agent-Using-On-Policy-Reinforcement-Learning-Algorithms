@@ -224,7 +224,7 @@ class StocksEnv(gym.Env):
     
     def render(self, mode='human'):
         print("Render called")
-        plt.plot(self.g_t)
+        #plt.plot(self.g_t)
         plt.plot(self.ps)
         
     def close(self):
