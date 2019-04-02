@@ -83,7 +83,9 @@ class StocksEnv(gym.Env):
         retval = None
         cur_value = self.portfolio_value()
         gain = cur_value - self.starting_portfolio_value
+        gain_avg = (apl_open[cur_timestep] - self.state[13]) * self.state[0]
         
+           
         
         if cur_timestep >= self.starting_point + (self.series_length * self.stride):
             new_state = [self.state[0], self.state[1], self.next_opening_price(), \
@@ -92,10 +94,10 @@ class StocksEnv(gym.Env):
             bonus = 0.
             if self.state[0] > 0 :
                 bonus = self.diversification_bonus 
-            self.g_t.append(gain)    
-            self.reward +=bonus + gain
-            print("\n ", gain ," - ",sum(self.ps)," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
-            return np.array(new_state), bonus + gain*10000 , True, { "msg": "done"}
+            self.g_t.append(self.reward)    
+            self.reward +=gain_avg
+            print("\n ", gain_avg ," - ",sum(self.ps)," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
+            return np.array(new_state), gain_avg , True, { "msg": "done"}
         
         
         
@@ -106,7 +108,7 @@ class StocksEnv(gym.Env):
                      *self.five_day_window(),self.state[13],self.next_open_price(self.state[0])]
                 self.state = new_state
                 self.reward += -100000
-                retval = np.array(new_state), -ts_left  -100000 , False, { "msg": "nothing" }
+                retval = np.array(new_state), -100000 , False, { "msg": "nothing" }
 
             else:
                 self.sellcount += 1
@@ -120,8 +122,8 @@ class StocksEnv(gym.Env):
                 self.ps.append(profit_sell)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left  + (profit_sell*1000) + self.giveShareRew() + self.netprof() , False, { "msg": "sold AAPL"}
+                self.reward += gain_avg
+                retval = np.array(new_state), gain_avg  + profit_sell , False, { "msg": "sold AAPL"}
         
         
         
@@ -130,8 +132,8 @@ class StocksEnv(gym.Env):
             new_state = [self.state[0], self.state[1] ,self.next_opening_price(), \
                      *self.five_day_window(),self.state[13],self.next_open_price(self.state[0])]
             self.state = new_state
-            self.reward += -self.inaction_penalty-ts_left +gain*100
-            retval = np.array(new_state),   -ts_left + self.giveShareRew() + self.netprof() , False, { "msg": "nothing" }
+            self.reward += gain_avg
+            retval = np.array(new_state),   gain_avg , False, { "msg": "nothing" }
         
         if action[0] == 0:
             if action[1] * apl_open[cur_timestep] > self.state[1]:
@@ -141,7 +143,7 @@ class StocksEnv(gym.Env):
                 self.reward += -100000
                # print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
                 
-                retval = np.array(new_state), -ts_left -100000 ,False, { "msg": "bankrupted self"}
+                retval = np.array(new_state),  -100000 ,False, { "msg": "bankrupted self"}
                 
             else:
                 self.buycount+=1
@@ -152,12 +154,10 @@ class StocksEnv(gym.Env):
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                self.reward += -ts_left +gain
-                retval = np.array(new_state), -ts_left + self.giveShareRew() + self.netprof(), False, { "msg": "bought AAPL"}
+                self.reward += gain_avg
+                retval = np.array(new_state), gain_avg, False, { "msg": "bought AAPL"}
                 
         
-
-                
 
                 
         #print("\n action taken: ",action, " pf- " ,self.portfolio_value()," - ",self.state[0],  " - ",self.state[1])
