@@ -123,7 +123,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += gain_avg
-                retval = np.array(new_state), gain_avg  + profit_sell , False, { "msg": "sold AAPL"}
+                retval = np.array(new_state), gain_avg  + (profit_sell * 10) , False, { "msg": "sold AAPL"}
         
         
         
@@ -136,11 +136,13 @@ class StocksEnv(gym.Env):
             retval = np.array(new_state),   gain_avg , False, { "msg": "nothing" }
         
         if action[0] == 0:
+            
             if action[1] * apl_open[cur_timestep] > self.state[1]:
                 new_state = [self.state[0], self.state[1], self.next_opening_price(), \
                          *self.five_day_window(),self.state[13],self.next_open_price(self.state[0])]
                 self.state = new_state
                 self.reward += -100000
+                self.nothingpseudo+=1
                # print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
                 
                 retval = np.array(new_state),  -100000 ,False, { "msg": "bankrupted self"}
