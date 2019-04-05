@@ -8,12 +8,12 @@ import random
 import matplotlib.pyplot as plt
 
 import pickle
-with open("./aplmsfopenclose.pkl", "rb") as f:
+with open("./aplmsfopencloseNew.pkl", "rb") as f:
     d = pickle.load(f)
 
 
-apl_open = d["mo"]
-apl_close = d["mc"]
+apl_open = d["bo"]
+apl_close = d["bc"]
 msf_open = d["mo"]
 msf_close = d["mc"]
 
