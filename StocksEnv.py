@@ -97,7 +97,7 @@ class StocksEnv(gym.Env):
             self.g_t.append(self.reward)    
             self.reward +=gain_avg
             print("\n ", gain_avg ," - ",sum(self.ps)," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
-            return np.array(new_state), 0 , True, { "msg": "done"}
+            return np.array(new_state), gain_avg , True, { "msg": "done"}
         
         
         
@@ -123,7 +123,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += gain_avg
-                retval = np.array(new_state),  (profit_sell * 10) , False, { "msg": "sold AAPL"}
+                retval = np.array(new_state),  gain_avg + (profit_sell * 100) , False, { "msg": "sold AAPL"}
         
         
         
@@ -133,7 +133,7 @@ class StocksEnv(gym.Env):
                      *self.five_day_window(),self.state[13],self.next_open_price(self.state[0])]
             self.state = new_state
             self.reward += gain_avg
-            retval = np.array(new_state),   0 , False, { "msg": "nothing" }
+            retval = np.array(new_state), gain_avg , False, { "msg": "nothing" }
         
         if action[0] == 0:
             
@@ -157,7 +157,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += gain_avg
-                retval = np.array(new_state), 0, False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), gain_avg, False, { "msg": "bought AAPL"}
                 
         
 
