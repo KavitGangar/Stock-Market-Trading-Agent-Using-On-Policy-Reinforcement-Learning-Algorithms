@@ -108,7 +108,7 @@ class StocksEnv(gym.Env):
                      *self.five_day_window(),self.state[13],self.next_open_price(self.state[0])]
                 self.state = new_state
                 self.reward += -100000
-                retval = np.array(new_state), 0 , False, { "msg": "nothing" }
+                retval = np.array(new_state), -100000 , False, { "msg": "nothing" }
 
             else:
                 self.sellcount += 1
@@ -133,7 +133,7 @@ class StocksEnv(gym.Env):
                      *self.five_day_window(),self.state[13],self.next_open_price(self.state[0])]
             self.state = new_state
             self.reward += gain_avg
-            retval = np.array(new_state),   gain_avg , False, { "msg": "nothing" }
+            retval = np.array(new_state),   0 , False, { "msg": "nothing" }
         
         if action[0] == 0:
             
@@ -157,7 +157,7 @@ class StocksEnv(gym.Env):
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
                 self.reward += gain_avg
-                retval = np.array(new_state), gain_avg, False, { "msg": "bought AAPL"}
+                retval = np.array(new_state), 0, False, { "msg": "bought AAPL"}
                 
         
 
