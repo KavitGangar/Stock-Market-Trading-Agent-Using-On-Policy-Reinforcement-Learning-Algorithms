@@ -77,7 +77,7 @@ class StocksEnv(gym.Env):
         profit_sell = 0
         #print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
         action = [action,1.]
-        print("\n previous state", " pf- " ,self.portfolio_value()," - ",self.state[0], " - ",self.state[1]," - ",self.state[2])
+        #print("\n previous state", " pf- " ,self.portfolio_value()," - ",self.state[0], " - ",self.state[1]," - ",self.state[2])
         cur_timestep = self.cur_timestep
         ts_left = 0 # self.series_length * self.stride - (cur_timestep - self.starting_point)
         retval = None
@@ -96,7 +96,7 @@ class StocksEnv(gym.Env):
                 bonus = self.diversification_bonus 
             self.g_t.append(self.reward)    
             self.reward +=gain_avg
-           # print("\n ", gain_avg ," - ",sum(self.ps)," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
+            print("\n ", gain_avg ," - ",sum(self.ps)," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
             return np.array(new_state), gain_avg , True, { "msg": "done"}
         
         
