@@ -77,7 +77,7 @@ class StocksEnv(gym.Env):
         profit_sell = 0
         #print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
         action = [action,1.]
-        #print("\n previous state", " pf- " ,self.portfolio_value()," - ",self.state[0], " - ",self.state[1]," - ",self.state[2])
+        print("\n previous state", " pf- " ,self.portfolio_value()," - ",self.state[0], " - ",self.state[1]," - ",self.state[2])
         cur_timestep = self.cur_timestep
         ts_left = 0 # self.series_length * self.stride - (cur_timestep - self.starting_point)
         retval = None
