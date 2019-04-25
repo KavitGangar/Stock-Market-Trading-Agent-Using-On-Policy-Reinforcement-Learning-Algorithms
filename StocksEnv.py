@@ -25,24 +25,18 @@ class StocksEnv(gym.Env):
     
 
     def __init__(self):
-        #self.starting_shares_mean = 0
-        #self.randomize_shares_std = 0
-        #self.starting_cash_mean = 200
-        #self.randomize_cash_std = 0
-        
-        #-----
+       
         self.low_state = np.zeros((15,))
         self.high_state = np.zeros((15,))+1000000
 
         self.viewer = None
 
-        #self.action_space = spaces.Box(low=0, high=4,
-         #                              shape=(1,), dtype=np.float32)
+       
         self.action_space = spaces.Discrete(3)    
         self.observation_space = spaces.Box(low=self.low_state, high=self.high_state,
                                             dtype=np.float32)        
         
-        #===
+   
         
         self.state = np.zeros(15)
         
@@ -53,15 +47,7 @@ class StocksEnv(gym.Env):
         self.nothingpseudo=0
 
         self.series_length = 150
-        #self.starting_point = 1
-        #self.cur_timestep = self.starting_point
-        
-        #self.state[0] = 70
-        #self.starting_portfolio_value = self.portfolio_value_states()
-        #self.state[1] = self.starting_cash
-        #self.state[2] = apl_open[self.cur_timestep]
-        ##self.state[3] = self.starting_portfolio_value
-        #self.state[4] = self.five_day_window()
+
         
         self.max_stride = 5
         self.stride = self.max_stride # no longer varying it
@@ -99,8 +85,8 @@ class StocksEnv(gym.Env):
             bonus = 0.
             if self.state[0] > 0 :
                 bonus = self.diversification_bonus 
-            self.g_t.append(self.reward)    
-            self.reward +=gain_avg
+            #self.g_t.append(self.reward)    
+            #self.reward +=gain_avg
             total_prof = sum(self.ps)
             print("\n ", gain_avg ," - ",total_prof," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
             profit_f.write(str(total_prof) + '\n')
@@ -148,7 +134,7 @@ class StocksEnv(gym.Env):
                 new_state = [self.state[0], self.state[1], self.next_opening_price(), \
                          *self.five_day_window(),self.state[13],self.next_open_price(self.state[0])]
                 self.state = new_state
-                self.reward += -100000
+                #self.reward += -100000
                 self.nothingpseudo+=1
                # print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
                 
@@ -163,7 +149,7 @@ class StocksEnv(gym.Env):
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                self.reward += gain_avg
+                #self.reward += gain_avg
                 retval = np.array(new_state), gain_avg, False, { "msg": "bought AAPL"}
                 
         
