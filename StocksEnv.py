@@ -11,8 +11,8 @@ import pickle
 with open("./aplmsfopenclose.pkl", "rb") as f:
     d = pickle.load(f)
     
-action_f = open('numpy.txt', 'a')
-profit_f = open('profit.txt', 'a')
+action_f = open('./numpy.txt', 'a')
+profit_f = open('./profit.txt', 'a')
 
 
 apl_open = d["mo"]
