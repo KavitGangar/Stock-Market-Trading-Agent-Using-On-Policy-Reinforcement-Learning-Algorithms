@@ -194,7 +194,7 @@ class StocksEnv(gym.Env):
         self.reward = 0
         self.ps = []
         if self.action_set:
-            np.savetxt(action_f, action_set)
+            np.savetxt(action_f, self.action_set)
         self.action_set = []
         
         return self.state
