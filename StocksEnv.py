@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 import pickle
 with open("./aplmsfopenclose.pkl", "rb") as f:
     d = pickle.load(f)
+    
+action_f = open('numpy.txt', 'a')
+profit_f = open('profit.txt', 'a')
 
 
 apl_open = d["mo"]
@@ -69,11 +72,13 @@ class StocksEnv(gym.Env):
         self.inaction_penalty = 0
         self.ps = []
         self.g_t = []
+        self.action_set = []
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
     def step(self, action):
+        self.action_set.append(action)
         profit_sell = 0
         #print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
         action = [action,1.]
@@ -96,7 +101,9 @@ class StocksEnv(gym.Env):
                 bonus = self.diversification_bonus 
             self.g_t.append(self.reward)    
             self.reward +=gain_avg
-            print("\n ", gain_avg ," - ",sum(self.ps)," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
+            total_prof = sum(self.ps)
+            print("\n ", gain_avg ," - ",total_prof," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
+            np.savetxt(profit_f, np.array([total_prof]))
             return np.array(new_state), gain_avg , True, { "msg": "done"}
         
         
@@ -186,6 +193,9 @@ class StocksEnv(gym.Env):
         self.done = False
         self.reward = 0
         self.ps = []
+        if action_set:
+            np.savetxt(action_f, action_set)
+        self.action_set = []
         
         return self.state
 
