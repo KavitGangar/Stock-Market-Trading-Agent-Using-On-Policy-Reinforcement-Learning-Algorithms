@@ -78,7 +78,7 @@ class StocksEnv(gym.Env):
         return [seed]
 
     def step(self, action):
-        self.action_set.append(action)
+        action_f.write((str(action) + ','))
         profit_sell = 0
         #print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
         action = [action,1.]
@@ -103,7 +103,7 @@ class StocksEnv(gym.Env):
             self.reward +=gain_avg
             total_prof = sum(self.ps)
             print("\n ", gain_avg ," - ",total_prof," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
-            np.savetxt(profit_f, np.array([total_prof]))
+            profit_f.write(str(total_prof) + '\n')
             return np.array(new_state), gain_avg , True, { "msg": "done"}
         
         
@@ -193,8 +193,7 @@ class StocksEnv(gym.Env):
         self.done = False
         self.reward = 0
         self.ps = []
-        if self.action_set:
-            np.savetxt(action_f, self.action_set)
+        action_f.write('\n')
         self.action_set = []
         
         return self.state
