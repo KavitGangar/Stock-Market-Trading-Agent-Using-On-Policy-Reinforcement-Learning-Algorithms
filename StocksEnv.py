@@ -17,8 +17,8 @@ profit_f = open('./profit.txt', 'a')
 
 apl_open = d["visa_open"]
 apl_close = d["visa_close"]
-msf_open = d["mo"]
-msf_close = d["mc"]
+msf_open = d["visa_open"]
+msf_close = d["visa_open"]
 
 
 class StocksEnv(gym.Env):
