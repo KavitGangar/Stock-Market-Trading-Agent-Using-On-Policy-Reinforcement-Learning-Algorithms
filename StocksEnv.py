@@ -172,7 +172,11 @@ class StocksEnv(gym.Env):
         
         return self.state
 
-    #To calculate portfolio value
+    #To calculate portfolio value w.r.t closing price
+    def portfolio_value(self):
+        return (self.state[0] * apl_close[self.cur_timestep])  + self.state[1]
+    
+    #To calculate portfolio value w.r.t opening price
     def portfolio_value_states(self):
         return (self.state[0] * apl_open[self.cur_timestep])  + self.state[1]
     
