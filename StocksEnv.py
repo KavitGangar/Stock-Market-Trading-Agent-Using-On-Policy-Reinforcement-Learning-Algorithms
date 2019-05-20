@@ -7,7 +7,7 @@ import random
 
 #to import the stocks data
 import pickle
-with open("./aplmsfopenclose.pkl", "rb") as f:
+with open("./mystockss.pkl", "rb") as f:
     d = pickle.load(f)
 
 #here the action sequence and profit of every episodes are stored    
@@ -15,8 +15,8 @@ action_f = open('./numpy.txt', 'a')
 profit_f = open('./profit.txt', 'a')
 
 #oopening and closing values of stock passed.
-apl_open = d["ao"]
-apl_close = d["ac"]
+apl_open = d["harshal_open"]
+apl_close = d["harshal_close"]
 
 
 class StocksEnv(gym.Env):
