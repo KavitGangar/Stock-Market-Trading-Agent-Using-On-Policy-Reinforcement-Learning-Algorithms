@@ -15,8 +15,8 @@ action_f = open('./numpy.txt', 'a')
 profit_f = open('./profit.txt', 'a')
 
 #oopening and closing values of stock passed.
-apl_open = d["lele_open"]
-apl_close = d["lele_close"]
+apl_open = d["SBI_open"]
+apl_close = d["SBI_close"]
 
 
 class StocksEnv(gym.Env):
