@@ -7,7 +7,7 @@ import random
 
 #to import the stocks data from the pickled file
 import pickle
-with open("./mystockss.pkl", "rb") as f:
+with open("./stocks.pkl", "rb") as f:
     d = pickle.load(f)
 
 #here the action sequence and profit of every episodes are stored    
