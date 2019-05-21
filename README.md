@@ -36,3 +36,7 @@ DataProcessing.py
 This file contains the code to process the stock data from quandl and dump it into a pickle file
 
 The user manual contains steps to execute the code
+
+Path.zip has the trained model of apple stock
+
+FYP.pkl has pickled data of apple,microsoft,nike and sbi
