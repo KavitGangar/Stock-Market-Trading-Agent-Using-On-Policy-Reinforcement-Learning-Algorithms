@@ -15,8 +15,8 @@ action_f = open('./numpy.txt', 'a')
 profit_f = open('./profit.txt', 'a')
 
 #oopening and closing values of stock passed.
-apl_open = d["SBI_open"]
-apl_close = d["SBI_close"]
+stock_open = d["SBI_open"]
+stock_close = d["SBI_close"]
 
 
 class StocksEnv(gym.Env):
@@ -34,18 +34,15 @@ class StocksEnv(gym.Env):
         self.state = np.zeros(15)
         
 
-        self.series_length = 150
+        self.series_length = 150   #length of the data to be taken for training
 
         
-        self.max_stride = 5
+        self.max_stride = 5       #interval of iteration over the days
         self.stride = self.max_stride
         
         self.done = False
-        self.reward = 0
-        self.diversification_bonus = 100
-        self.inaction_penalty = 0
+ 
         self.ps = []
-        self.g_t = []
         self.action_set = []
         
     def seed(self, seed=None):
@@ -62,7 +59,7 @@ class StocksEnv(gym.Env):
         cur_timestep = self.cur_timestep
         cur_value = self.portfolio_value()
         gain = cur_value - self.starting_portfolio_value
-        gain_avg = (apl_open[cur_timestep] - self.state[13]) * self.state[0]
+        gain_avg = (stock_open[cur_timestep] - self.state[13]) * self.state[0]
         
            
         #to check if the timesteps exceed the data so as to end the episode        
@@ -91,12 +88,12 @@ class StocksEnv(gym.Env):
             else:
                 self.sellcount += 1
                 apl_shares = self.state[0] - action[1]
-                cash_gained = action[1] * apl_open[cur_timestep] * 0.9
+                cash_gained = action[1] * stock_open[cur_timestep] * 0.9
                 new_state = [apl_shares , self.state[1] + cash_gained, self.next_opening_price(), \
                        *self.ten_day_window(),self.state[13],self.next_open_price(apl_shares)]
                 
                 self.state = new_state
-                profit_sell = apl_open[cur_timestep] - self.state[13]
+                profit_sell = stock_open[cur_timestep] - self.state[13]
                 self.ps.append(profit_sell)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
@@ -116,7 +113,7 @@ class StocksEnv(gym.Env):
    # To buy
         if action[0] == 0:
             # To check if cash is available to buy the stock
-            if action[1] * apl_open[cur_timestep] > self.state[1]:
+            if action[1] * stock_open[cur_timestep] > self.state[1]:
                 new_state = [self.state[0], self.state[1], self.next_opening_price(), \
                          *self.ten_day_window(),self.state[13],self.next_open_price(self.state[0])]
                 self.state = new_state
@@ -128,9 +125,9 @@ class StocksEnv(gym.Env):
             else:
                 self.buycount+=1
                 apl_shares = self.state[0] + action[1]
-                cash_spent = action[1] * apl_open[cur_timestep] * 1.1
+                cash_spent = action[1] * stock_open[cur_timestep] * 1.1
                 new_state = [apl_shares, self.state[1] - cash_spent, self.next_opening_price(), \
-                        *self.ten_day_window(),self.calcAvg(self.state[13],apl_open[cur_timestep]),self.next_open_price(apl_shares)]
+                        *self.ten_day_window(),self.calcAvg(self.state[13],stock_open[cur_timestep]),self.next_open_price(apl_shares)]
                 self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
@@ -152,10 +149,10 @@ class StocksEnv(gym.Env):
         self.starting_point = self.cur_timestep
         self.state[0] = 10 
         self.state[1] = self.starting_cash
-        self.state[2] = apl_open[self.cur_timestep]
+        self.state[2] = stock_open[self.cur_timestep]
         self.starting_portfolio_value = self.portfolio_value_states()
         self.state[3:13] = self.ten_day_window()
-        self.state[13] = apl_open[self.cur_timestep]
+        self.state[13] = stock_open[self.cur_timestep]
         self.state[14] = self.starting_portfolio_value
 
         # These are used to keep a count of the actions
@@ -174,26 +171,26 @@ class StocksEnv(gym.Env):
 
     #To calculate portfolio value w.r.t closing price
     def portfolio_value(self):
-        return (self.state[0] * apl_close[self.cur_timestep])  + self.state[1]
+        return (self.state[0] * stock_close[self.cur_timestep])  + self.state[1]
     
     #To calculate portfolio value w.r.t opening price
     def portfolio_value_states(self):
-        return (self.state[0] * apl_open[self.cur_timestep])  + self.state[1]
+        return (self.state[0] * stock_open[self.cur_timestep])  + self.state[1]
     
     #To return the next opening price    
     def next_opening_price(self):
         step = self.cur_timestep + self.stride
-        return apl_open[step]
+        return stock_open[step]
     
     #To return the latest investment in stocks    
     def next_open_price(self,apl_):
         step = self.cur_timestep + self.stride
-        return (apl_ * apl_open[step])
+        return (apl_ * stock_open[step])
 
     #To take the last 10 days opening value of the stock from data with respect to current time step
     def ten_day_window(self):
         step = self.cur_timestep 
-        return apl_open[step-10:step]
+        return stock_open[step-10:step]
     
     #To calculate the average buying price of the stocks
     def calcAvg(self,prev,new):
