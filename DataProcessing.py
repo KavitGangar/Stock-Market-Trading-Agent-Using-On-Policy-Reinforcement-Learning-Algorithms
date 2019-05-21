@@ -1,4 +1,3 @@
-
 # Import pandas 
 import pandas as pd 
 import csv
@@ -7,125 +6,72 @@ import matplotlib.dates as mdates
 from datetime import datetime 
 
 # reading csv file  
-df1 = pd.read_csv("ba.csv") 
+df1 = pd.read_csv("SBI.csv") 
 df2 = pd.read_csv("nike.csv") 
-df3 = pd.read_csv("dhanno.csv") 
-df4 = pd.read_csv("gs.csv") 
-df5 = pd.read_csv("jpmc.csv") 
-df6 = pd.read_csv("ibm.csv") 
-df7 = pd.read_csv("utx.csv") 
-df8 = pd.read_csv("visa.csv") 
-df9 = pd.read_csv("pg.csv") 
-df10 = pd.read_csv("trv.csv") 
 
+# Turns out that on 19 Nov 2014, SBI stock was split in the ratio of 1:10. So, we divide everything before element 214 in the stock array by 10 to correct for this.
 
-#detrend is done to remove a monotonous trend in the data and places where division by a constant is done to normalise the stock values if at all a bonus or split is there
+open_df_1 = df1['Open']
+open_df_1[:214] /= 10
+close_df_1 = df1['Close']
+close_df_1[:214] /= 10
 
-y1 = df1['Open']
-y11 = df1['Close']
+# Same case with nike
 
-y2 = df2['Open']
-y2[:499] /= 2
-y21 = df2['Close']
-y21[:499] /= 2
-
-y3 = df3['Open']
-y31 = df3['Close']
-
-y4 = df4['Open']
-y41 = df4['Close']
-
-y5 = df5['Open']
-y51 = df5['Close']
-
-y6 = df6['Open']
-y61 = df6['Close']
-
-y7 = df7['Open']
-y71 = df7['Close']
-
-y8 = df8['Open']
-y8[:304] /= 4
-
-y81 = df8['Close']
-y81[:304] /= 4
-
-y9 = df9['Open']
-y91 = df9['Close']
-
-y10 = df10['Open']
-y101 = df10['Close']
+open_df_2 = df2['Open']
+open_df_2[:499] /= 2
+close_df_2 = df2['Close']
+close_df_2[:499] /= 2
 
 
 from scipy import signal
 
 
+# we need to de-trend the data. We want the AI to learn the fundamentals of the stock signal - buy if it's going to rise. If we do not remove the trend, maybe the agent only learn to buy at the start and hold till the end since there is general upward trend
+detrended_open_df_1 = signal.detrend(open_df_1)
+detrended_open_df_1 += -detrended_open_df_1.min()
 
-new_y1 = signal.detrend(y1)
-new_y1 += y1.min()
-
-new_y2 = signal.detrend(y2)
-new_y2 += y2.min()
-
-new_y3 = signal.detrend(y3)
-new_y3 += y3.min()
-
-new_y4 = signal.detrend(y4)
-new_y4 += y4.min()
-
-new_y5 = signal.detrend(y5)
-new_y5 += y5.min()
-
-new_y6 = signal.detrend(y6)
-new_y6 += y6.min()
-
-new_y7 = signal.detrend(y7)
-new_y7 += y7.min()
-
-new_y8 = signal.detrend(y8)
-new_y8 += y8.min()
-
-new_y9 = signal.detrend(y9)
-new_y9 += y9.min()
-
-new_y10 = signal.detrend(y10)
-new_y10 += y10.min()
+detrended_close_df_1 = signal.detrend(close_df_1)
+detrended_close_df_1 += -detrended_close_df_1.min()
 
 
-new_y11 = signal.detrend(y11)
-new_y11 += y11.min()
-
-new_y21 = signal.detrend(y21)
-new_y21 += y21.min()
-
-new_y31 = signal.detrend(y31)
-new_y31 += y31.min()
-
-new_y41 = signal.detrend(y41)
-new_y41 += y41.min()
-
-new_y51 = signal.detrend(y51)
-new_y51 += y51.min()
-
-new_y61 = signal.detrend(y61)
-new_y61 += y61.min()
-
-new_y71 = signal.detrend(y71)
-new_y71 += y71.min()
-
-new_y81 = signal.detrend(y81)
-new_y81 += y81.min()
-
-new_y91 = signal.detrend(y91)
-new_y91 += y91.min()
-
-new_y101 = signal.detrend(y101)
-new_y101 += y101.min()
+detrended_open_df_2 = signal.detrend(open_df_2)
+detrended_open_df_2 += open_df_2.min()
 
 
+detrended_close_df_2 = signal.detrend(close_df_2)
+detrended_close_df_2 += close_df_2.min()
+
+plt.plot(detrended_open_df_1)
+plt.plot(detrended_close_df_1)
+
+
+plt.plot(detrended_open_df_2)
+plt.plot(detrended_close_df_2)
+
+
+plt.show()
+
+
+# We had already created a pickle file for apple and microsoft stocks. So I am loading those stocks directly from attached pickle file and saving them to the final pickle 
 import pickle
-with open("mystocks.pkl", "wb+") as f:
+with open("aplmsfopenclose.pkl", "rb") as f:
+    d = pickle.load(f)
+
+# We have loaded with data and if you will print d, you can see the format of the pickle file. We are storing the contents of ao,ac,mo,mc (apple open, apple close, microsoft open, microsoft close) to our local variables which will then again be saved in final fyp.pkl file
+variable_apl_open = d["ao"]
+variable_apl_close = d["ac"]
+variable_msft_open = d["mo"]
+variable_msft_close = d["mc"]
+
+with open("apple_test.pkl", "rb") as f:
+    d = pickle.load(f)
+print (d)
+variable_apl_test_open = d["ao"]
+variable_apl_test_close = d["ac"]
+
+# Dump everything in final pickle file
+import pickle
+with open("FYP.pkl", "wb+") as f:
     pickle.dump({
-    	"trv_open":new_y10, "trv_close":new_y101 , "trv_untrend_open":y10, "trv_untrend_close":y101 ,
-    	"pg_open":new_y9, "pg_close":new_y91
-    	"visa_open":new_y8, "visa_close":new_y81 , "visa_untrend_open":y8, "visa_untrend_close":y81 ,"utx_open":new_y7, "utx_close":new_y71 ,"ibm_open":new_y6, "ibm_close":new_y61 ,"jpmc_open":new_y5, "jpmc_close":new_y51 ,"gs_open":new_y4, "gs_close":new_y41 ,"ba_open":new_y1, "ba_close":new_y11, "nike_open":new_y2, "nike_close":new_y21 , "dhanno_open":new_y3 , "dhanno_close":new_y31}, f)
+    	"SBI_open":detrended_open_df_1, "SBI_close":detrended_close_df_1, "Nike_open":detrended_open_df_2, "Nike_close":detrended_close_df_2, "Apple_open": variable_apl_open, "Apple_close": variable_apl_close,"Microsoft_open": variable_msft_open, "Microsoft_close": variable_msft_close, "Apple_test_open": variable_apl_test_open, "Apple_test_close":variable_apl_test_close }, f)
