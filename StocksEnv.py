@@ -15,8 +15,8 @@ action_f = open('./action_seq.txt', 'a')
 profit_f = open('./profit.txt', 'a')
 
 #opening and closing values of stock passed, you can change the parameter inside d,to change the stock.
-stock_open = d["SBI_open"]
-stock_close = d["SBI_close"]
+stock_open = d["Apple_open"]
+stock_close = d["Apple_close"]
 
 
 class StocksEnv(gym.Env):
