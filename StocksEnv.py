@@ -198,7 +198,7 @@ class StocksEnv(gym.Env):
     
     
     def render(self, mode='human'):
-        print("Render called")
+        #print("Render called")
 
     def close(self):
         if self.viewer:
