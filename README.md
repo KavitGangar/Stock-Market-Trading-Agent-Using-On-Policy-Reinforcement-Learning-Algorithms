@@ -40,3 +40,5 @@ The user manual contains steps to execute the code
 Path.zip has the trained model of apple stock
 
 FYP.pkl has pickled data of apple,microsoft,nike and sbi
+
+In cases where you want to edit the stock environment, you will need to create own github repo, add the environment file to it and then make the changes
