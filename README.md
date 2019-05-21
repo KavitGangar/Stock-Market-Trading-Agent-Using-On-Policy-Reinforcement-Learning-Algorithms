@@ -31,14 +31,8 @@ It has 3 possibe actions and type is discrete(3)
 2 Do nothing / sit
 
 
-StockTraderagent.ipynb:
-
-It is created on googlecolab and can be used directly on colab
-
-It has 4 cells, the first cell is to import gym and spinning up and then copying the trading environment from git 
-
-The next three cells are the execution of algorithms
-
 DataProcessing.py
 
 This file contains the code to process the stock data from quandl and dump it into a pickle file
+
+The user manual contains steps to execute the code
