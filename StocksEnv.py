@@ -5,16 +5,16 @@ from gym.utils import seeding
 import numpy as np
 import random
 
-#to import the stocks data
+#to import the stocks data from the pickled file
 import pickle
 with open("./mystockss.pkl", "rb") as f:
     d = pickle.load(f)
 
 #here the action sequence and profit of every episodes are stored    
-action_f = open('./numpy.txt', 'a')
+action_f = open('./action_seq.txt', 'a')
 profit_f = open('./profit.txt', 'a')
 
-#oopening and closing values of stock passed.
+#opening and closing values of stock passed, you can change the parameter inside d,to change the stock.
 stock_open = d["SBI_open"]
 stock_close = d["SBI_close"]
 
@@ -34,10 +34,10 @@ class StocksEnv(gym.Env):
         self.state = np.zeros(15)
         
 
-        self.series_length = 150   #length of the data to be taken for training
+        self.series_length = 150   #length of the data to be taken for training (length of episode)
 
         
-        self.max_stride = 5       #interval of iteration over the days
+        self.max_stride = 5   #interval of iteration over the days, you can alter this according to the number of days by which u want to iter
         self.stride = self.max_stride
         
         self.done = False
