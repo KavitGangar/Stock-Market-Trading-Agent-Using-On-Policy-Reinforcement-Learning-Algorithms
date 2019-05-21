@@ -31,6 +31,8 @@ It has 3 possibe actions and type is discrete(3)
 2 Do nothing / sit
 
 
+
+
 DataProcessing.py
 
 This file contains the code to process the stock data from quandl and dump it into a pickle file
