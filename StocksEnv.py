@@ -5,219 +5,205 @@ from gym.utils import seeding
 import numpy as np
 import random
 
-import matplotlib.pyplot as plt
-
+#to import the stocks data from the pickled file
 import pickle
-with open("./aplmsfopencloseOG.pkl", "rb") as f:
+with open("./FYP.pkl", "rb") as f:
     d = pickle.load(f)
 
+#here the action sequence and profit of every episodes are stored    
+action_f = open('./action_seq.txt', 'a')
+profit_f = open('./profit.txt', 'a')
 
-apl_open = d["ao"]
-apl_close = d["ac"]
-msf_open = d["mo"]
-msf_close = d["mc"]
+#opening and closing values of stock passed, you can change the parameter inside d,to change the stock.
+stock_open = d["Apple_open"]
+stock_close = d["Apple_close"]
 
 
 class StocksEnv(gym.Env):
     
-
+#initialisation of state variables and action space
     def __init__(self):
-        self.starting_shares_mean = 0
-        self.randomize_shares_std = 0
-        self.starting_cash_mean = 200
-        self.randomize_cash_std = 0
-        
-        #-----
-        self.low_state = np.zeros((8,))
-        self.high_state = np.zeros((8,))+100000000
-
+       
+        self.low_state = np.zeros((15,))
+        self.high_state = np.zeros((15,))+1000000
         self.viewer = None
-
-        #self.action_space = spaces.Box(low=0, high=4,
-         #                              shape=(1,), dtype=np.float32)
-        self.action_space = spaces.Discrete(5)    
+        self.action_space = spaces.Discrete(3)    
         self.observation_space = spaces.Box(low=self.low_state, high=self.high_state,
                                             dtype=np.float32)        
         
-        #===
+        self.state = np.zeros(15)
         
-        self.state = np.zeros(8)
-        
-        self.starting_cash = 2000
 
-        self.series_length = 100
-        self.starting_point = 40
-        self.cur_timestep = self.starting_point
+        self.series_length = 150   #length of the data to be taken for training (length of episode)
+
         
-        self.state[0] = random.randint(40,80)
-        self.state[1] = random.randint(40,80)
-        self.starting_portfolio_value = self.portfolio_value_open()
-        self.state[2] = self.starting_cash
-        self.state[3] = apl_open[self.cur_timestep]
-        self.state[4] = msf_open[self.cur_timestep]
-        self.state[5] = self.starting_portfolio_value
-        self.state[6] = self.five_day_window()[0]
-        self.state[7] = self.five_day_window()[1]
-        
-        self.max_stride = 5
-        self.stride = self.max_stride # no longer varying it
+        self.max_stride = 5   #interval of iteration over the days, you can alter this according to the number of days by which u want to iter
+        self.stride = self.max_stride
         
         self.done = False
-        self.diversification_bonus = 1.
-        self.inaction_penalty = 0
-
+ 
+        self.ps = []
+        self.action_set = []
+        
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
+    # this the the step function which is used to take the action on the environment
     def step(self, action):
-
-      	#print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
-        action = [action,1.]
+        action_f.write((str(action) + ',')) #To write the action taken to file
+        profit_sell = 0
         #print("\n previous state", " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2])
+        action = [action,1.]
+        #print("\n previous state", " pf- " ,self.portfolio_value()," - ",self.state[0], " - ",self.state[1]," - ",self.state[2])
         cur_timestep = self.cur_timestep
-        ts_left = self.series_length*self.stride - (cur_timestep - self.starting_point)
-        retval = None
         cur_value = self.portfolio_value()
         gain = cur_value - self.starting_portfolio_value
+        gain_avg = (stock_open[cur_timestep] - self.state[13]) * self.state[0]
         
+           
+        #to check if the timesteps exceed the data so as to end the episode        
         if cur_timestep >= self.starting_point + (self.series_length * self.stride):
-            new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                        cur_value, *self.five_day_window()]
-            self.state = np.array(new_state)
-            bonus = 0.
-            if self.state[0] > 0 and self.state[1] > 0:
-                bonus = self.diversification_bonus
-            print("\nEpisode Terminating done  -- portfoliovalue is " , cur_value )    
-            return np.array(new_state), bonus + gain, True, { "msg": "done"}
-        
-        if action[0] == 2:
-            new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                    self.next_open_price(self.state[0],self.state[1])+self.state[2], *self.five_day_window()]
-            self.state = np.array(new_state)
-            retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "nothing" }
-            
-        if action[0] == 0:
-            if action[1] * apl_open[cur_timestep] > self.state[2]:
-                new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                        cur_value, *self.five_day_window()]
-                self.state = np.array(new_state)
-                print("\nEpisode Terminating Bankrupt")
-                retval = np.array(new_state), -1000000, True, { "msg": "bankrupted self"}
-            else:
-                apl_shares = self.state[0] + action[1]
-                cash_spent = action[1] * apl_open[cur_timestep] * 1.1
-                new_state = [apl_shares, self.state[1], self.state[2] - cash_spent, *self.next_opening_price(), \
-                       self.next_open_price(apl_shares,self.state[1]) + self.state[2] - cash_spent, *self.five_day_window()]
-                self.state = np.array(new_state)
-                cur_value = self.portfolio_value()
-                gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "bought AAPL"}
-                
-        if action[0] == 3:
-            if action[1] * msf_open[cur_timestep] > self.state[2]:
-                new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                        cur_value, *self.five_day_window()]
-                self.state = np.array(new_state)
-                print("\nEpisode Terminating Bankrupt__")
-                retval =  np.array(new_state), -1000000, True, { "msg": "bankrupted self"}
-            else:
-                msf_shares = self.state[1] + action[1]
-                cash_spent = action[1] * msf_open[cur_timestep] * 1.1
-                new_state = [self.state[0], msf_shares, self.state[2] - cash_spent, *self.next_opening_price(), \
-                       self.next_open_price(self.state[0],msf_shares)  + self.state[2] - cash_spent , *self.five_day_window()]
-                self.state = np.array(new_state)
-                cur_value = self.portfolio_value()
-                gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "bought MSFT"}
-        
+            new_state = [self.state[0], self.state[1], self.next_opening_price(), \
+                         *self.ten_day_window(),self.state[4],self.next_open_price(self.state[0])]
+            self.state = new_state
 
+            total_prof = sum(self.ps)
+            #print("\n ", gain_avg ," - ",total_prof," - ",self.buycount , " - " ,self.sellcount, "-" ,self.nothing,"- ",self.nothingpseudo) 
+            profit_f.write(str(total_prof) + '\n') #writes the total profit of episode to file
+            return np.array(new_state), gain_avg , True, { "msg": "done"}
+        
+        
+  #To sell
         if action[0] == 1:
+            # to check if stocks are available to sell
             if action[1] > self.state[0]:
-                new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                        cur_value, *self.five_day_window()]
-                self.state = np.array(new_state)
-                print("\nEpisode Terminating soldmore")
-                retval = np.array(new_state), -1000000, True, { "msg": "sold more than have"}
+                self.nothingpseudo+=1
+                new_state = [self.state[0], self.state[1] ,self.next_opening_price(), \
+                     *self.ten_day_window(),self.state[13],self.next_open_price(self.state[0])]
+                self.state = new_state
+                
+                retval = np.array(new_state), -100000 , False, { "msg": "nothing" }
+
             else:
+                self.sellcount += 1
                 apl_shares = self.state[0] - action[1]
-                cash_gained = action[1] * apl_open[cur_timestep] * 0.9
-                new_state = [apl_shares, self.state[1], self.state[2] + cash_gained, *self.next_opening_price(), \
-                       self.next_open_price(apl_shares,self.state[1]) + self.state[2] + cash_gained, *self.five_day_window()]
-                self.state = np.array(new_state)
+                cash_gained = action[1] * stock_open[cur_timestep] * 0.9
+                new_state = [apl_shares , self.state[1] + cash_gained, self.next_opening_price(), \
+                       *self.ten_day_window(),self.state[13],self.next_open_price(apl_shares)]
+                
+                self.state = new_state
+                profit_sell = stock_open[cur_timestep] - self.state[13]
+                self.ps.append(profit_sell)
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold AAPL"}
                 
-        if action[0] == 4:
-            if action[1] > self.state[1]:
-                new_state = [self.state[0], self.state[1], self.state[2], *self.next_opening_price(), \
-                        cur_value, *self.five_day_window()]
-                self.state = np.array(new_state)
-                print("\nEpisode Terminating soldmore4")
-                retval = np.array(new_state), -1000000, True, { "msg": "sold more than have"}
+                retval = np.array(new_state),  gain_avg + (profit_sell * 100) , False, { "msg": "sold AAPL"}
+        
+        
+   # To do nothing/sit     
+        if action[0] == 2:
+            self.nothing += 1
+            new_state = [self.state[0], self.state[1] ,self.next_opening_price(), \
+                     *self.ten_day_window(),self.state[13],self.next_open_price(self.state[0])]
+            self.state = new_state
+            self.reward += gain_avg
+            retval = np.array(new_state), gain_avg , False, { "msg": "nothing" }
+   
+   # To buy
+        if action[0] == 0:
+            # To check if cash is available to buy the stock
+            if action[1] * stock_open[cur_timestep] > self.state[1]:
+                new_state = [self.state[0], self.state[1], self.next_opening_price(), \
+                         *self.ten_day_window(),self.state[13],self.next_open_price(self.state[0])]
+                self.state = new_state
+                self.nothingpseudo+=1
+               # print("\nEpisode Terminating Bankrupt REWARD = " ,self.reward," - " ,self.buycount , " - " ,self.sellcount, "-" ,self.nothing ,"- ",self.nothingpseudo)
+                
+                retval = np.array(new_state),  -100000 ,False, { "msg": "bankrupted self"}
+                
             else:
-                msf_shares = self.state[1] - action[1]
-                cash_gained = action[1] * msf_open[cur_timestep] * 0.9
-                new_state = [self.state[0], msf_shares, self.state[2] + cash_gained, *self.next_opening_price(), \
-                       self.next_open_price(self.state[0],msf_shares) + self.state[2] + cash_gained , *self.five_day_window()]
-                self.state = np.array(new_state)
+                self.buycount+=1
+                apl_shares = self.state[0] + action[1]
+                cash_spent = action[1] * stock_open[cur_timestep] * 1.1
+                new_state = [apl_shares, self.state[1] - cash_spent, self.next_opening_price(), \
+                        *self.ten_day_window(),self.calcAvg(self.state[13],stock_open[cur_timestep]),self.next_open_price(apl_shares)]
+                self.state = new_state
                 cur_value = self.portfolio_value()
                 gain = cur_value - self.starting_portfolio_value
-                retval = np.array(new_state), self.inaction_penalty-ts_left+gain, False, { "msg": "sold MSFT"}
                 
-        print("\n action taken: ",action, " - " ,self.state[5]," - ",self.state[0], " - ",self.state[1], " - ",self.state[2]," g ",gain)
+                retval = np.array(new_state), gain_avg, False, { "msg": "bought AAPL"}
+                
+                    
+        #print("\n action taken: ",action, " pf- " ,self.portfolio_value()," - ",self.state[0],  " - ",self.state[1])
         self.cur_timestep += self.stride
 
         return retval
-
+    
+    
+    #This is called before beginning of every new episode
     def reset(self):
-        self.state = np.zeros(8)
-        self.starting_cash = 200
-        self.cur_timestep = 40
-        self.state[0] = random.randint(40,80)
-        self.state[1] = random.randint(40,80)
-        self.state[2] = 2000
-        self.state[3] = apl_open[self.cur_timestep]
-        self.state[4] = msf_open[self.cur_timestep]
-        self.starting_portfolio_value = self.portfolio_value()
-        self.state[5] = self.starting_portfolio_value
-        self.state[6] = self.five_day_window()[0]
-        self.state[7] = self.five_day_window()[1]       
+        self.state = np.zeros(15)
+        self.starting_cash = 1000
+        self.cur_timestep = 10
+        self.starting_point = self.cur_timestep
+        self.state[0] = 10 
+        self.state[1] = self.starting_cash
+        self.state[2] = stock_open[self.cur_timestep]
+        self.starting_portfolio_value = self.portfolio_value_states()
+        self.state[3:13] = self.ten_day_window()
+        self.state[13] = stock_open[self.cur_timestep]
+        self.state[14] = self.starting_portfolio_value
+
+        # These are used to keep a count of the actions
+        self.buycount=0
+        self.sellcount=0
+        self.nothing=0
+        self.nothingpseudo=0
+
         self.done = False
+        self.reward = 0
+        self.ps = []
+        action_f.write('\n')
+        self.action_set = []
+        
         return self.state
 
-    
+    #To calculate portfolio value w.r.t closing price
     def portfolio_value(self):
-        return (self.state[0] * apl_close[self.cur_timestep]) + (self.state[1] * msf_close[self.cur_timestep]) + self.state[2]
+        return (self.state[0] * stock_close[self.cur_timestep])  + self.state[1]
     
-    def portfolio_value_open(self):
-        return (self.state[0] * apl_open[self.cur_timestep]) + (self.state[1] * msf_open[self.cur_timestep]) + self.state[2]
-   
+    #To calculate portfolio value w.r.t opening price
+    def portfolio_value_states(self):
+        return (self.state[0] * stock_open[self.cur_timestep])  + self.state[1]
     
+    #To return the next opening price    
     def next_opening_price(self):
         step = self.cur_timestep + self.stride
-        return [apl_open[step], msf_open[step]]
+        return stock_open[step]
     
-    def next_open_price(self,apl_,msf_):
+    #To return the latest investment in stocks    
+    def next_open_price(self,apl_):
         step = self.cur_timestep + self.stride
-        return (apl_ * apl_open[step]) + (msf_ * msf_open[step]) 
-           
+        return (apl_ * stock_open[step])
+
+    #To take the last 10 days opening value of the stock from data with respect to current time step
+    def ten_day_window(self):
+        step = self.cur_timestep 
+        return stock_open[step-10:step]
     
-    
-    def five_day_window(self):
-        step = self.cur_timestep
-        if step < 5:
-            return [apl_open[0], msf_open[0]]
-        apl5 = apl_open[step-5:step].mean()
-        msf5 = msf_open[step-5:step].mean()
-        return [apl5, msf5]
+    #To calculate the average buying price of the stocks
+    def calcAvg(self,prev,new):
+        return ((prev*self.state[0])+new)/(self.state[0]+1)
     
     
     def render(self, mode='human'):
-        print("Render called")
-        
+        x = 1
+        #print("Render called")
+
     def close(self):
         if self.viewer:
             self.viewer.close()
             self.viewer = None
+    
+            
