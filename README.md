@@ -1,5 +1,7 @@
 Stock Trading Agent Using Reinforcement Learning:
 
+Research Paper : https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3582014
+
 In order to use the code, add the environment to the installed openai gym library and then run the given StockTraderagent file for the execution of the algoritms
 
 Environment (StocksEnv.py):
